@@ -1,0 +1,87 @@
+version: '3.8'
+
+services:
+  # Base de datos MySQL
+  db:
+    image: mysql:8.0
+    container_name: tiquets-mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: tiquets_db
+      MYSQL_USER: tiquets_user
+      MYSQL_PASSWORD: tiquets_password
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./db/data:/var/lib/mysql
+      - ./db/init:/docker-entrypoint-initdb.d
+    networks:
+      - tiquets-network
+
+  # API con Node.js
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    container_name: tiquets-api
+    restart: always
+    depends_on:
+      - db
+    environment:
+      - NODE_ENV=development
+      - DB_HOST=db
+      - DB_USER=tiquets_user
+      - DB_PASSWORD=tiquets_password
+      - DB_NAME=tiquets_db
+      - JWT_SECRET=your_jwt_secret_key
+      - SMTP_HOST=smtp.example.com
+      - SMTP_PORT=587
+      - SMTP_USER=your_email@example.com
+      - SMTP_PASS=your_email_password
+      - ADMIN_EMAIL=admin@example.com
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./api:/app
+      - /app/node_modules
+    networks:
+      - tiquets-network
+
+  # Frontend para usuarios
+  frontend-user:
+    build:
+      context: ./frontend-user
+      dockerfile: Dockerfile
+    container_name: tiquets-frontend-user
+    restart: always
+    ports:
+      - "80:80"
+    volumes:
+      - ./frontend-user:/app
+      - /app/node_modules
+    depends_on:
+      - api
+    networks:
+      - tiquets-network
+
+  # Frontend para administradores
+  frontend-admin:
+    build:
+      context: ./frontend-admin
+      dockerfile: Dockerfile
+    container_name: tiquets-frontend-admin
+    restart: always
+    ports:
+      - "8080:80"
+    volumes:
+      - ./frontend-admin:/app
+      - /app/node_modules
+    depends_on:
+      - api
+    networks:
+      - tiquets-network
+
+networks:
+  tiquets-network:
+    driver: bridge
