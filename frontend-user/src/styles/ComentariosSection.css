@@ -1,0 +1,211 @@
+.comentarios-section {
+  margin-top: 2rem;
+  border-top: 1px solid #e0e0e0;
+  padding-top: 1.5rem;
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+.comentarios-title {
+  margin-bottom: 1.25rem;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.comentarios-list {
+  margin-bottom: 1.5rem;
+}
+
+.no-comentarios {
+  font-style: italic;
+  color: #777;
+  text-align: center;
+  padding: 1rem;
+  background-color: #f9f9f9;
+  border-radius: 0.5rem;
+}
+
+.comentario {
+  background-color: #f8f9fa;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  position: relative;
+  transition: all 0.2s ease;
+  border: 1px solid #eee;
+}
+
+.comentario:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.comentario-admin {
+  background-color: #e8f4ff;
+  border-left: 4px solid #0d6efd;
+}
+
+.comentario-usuario {
+  background-color: #f8f9fa;
+  border-left: 4px solid #6c757d;
+}
+
+.comentario-header {
+  margin-bottom: 0.75rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.comentario-autor {
+  font-weight: 600;
+  color: #444;
+}
+
+.comentario-rol {
+  font-size: 0.85rem;
+  color: #555;
+  padding: 0.2rem 0.5rem;
+  background-color: #f0f0f0;
+  border-radius: 0.25rem;
+}
+
+.comentario-fecha {
+  font-size: 0.85rem;
+  color: #777;
+  margin-left: auto;
+}
+
+.comentario-contenido {
+  white-space: pre-line;
+  color: #333;
+  line-height: 1.5;
+}
+
+.comentario-eliminar-btn {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  opacity: 0.7;
+  transition: opacity 0.2s ease;
+  font-size: 0.85rem;
+  padding: 0.25rem 0.5rem;
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.comentario-eliminar-btn:hover:not(:disabled) {
+  opacity: 1;
+  background-color: #bb2d3b;
+}
+
+.comentario-eliminar-btn:disabled {
+  background-color: #6c757d;
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+.comentario-form {
+  background-color: #f8f9fa;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid #eee;
+}
+
+.comentario-textarea {
+  resize: vertical;
+  min-height: 5rem;
+  border-radius: 0.375rem;
+  border: 1px solid #ced4da;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.comentario-textarea:focus {
+  border-color: #86b7fe;
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+  outline: none;
+}
+
+.comentario-enviar-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: auto;
+  margin-top: 0.75rem;
+  background-color: #0d6efd;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.15s ease-in-out;
+}
+
+.comentario-enviar-btn:hover:not(:disabled) {
+  background-color: #0b5ed7;
+}
+
+.comentario-enviar-btn:disabled {
+  background-color: #6c757d;
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+@media (max-width: 576px) {
+  .comentario-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+  
+  .comentario-fecha {
+    margin-left: 0;
+    margin-top: 0.25rem;
+  }
+  
+  .comentario-eliminar-btn {
+    top: 0.5rem;
+    right: 0.5rem;
+  }
+}
+
+/* Iconos y spinners */
+.icon-trash {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.loading-spinner-small {
+  width: 1rem;
+  height: 1rem;
+  border: 0.125rem solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 1s infinite linear;
+  margin-right: 0.5rem;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.comentarios-error {
+  background-color: #f8d7da;
+  color: #842029;
+  padding: 0.75rem 1.25rem;
+  margin-bottom: 1rem;
+  border: 1px solid #f5c2c7;
+  border-radius: 0.375rem;
+}

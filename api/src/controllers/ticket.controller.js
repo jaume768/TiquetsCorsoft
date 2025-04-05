@@ -1,4 +1,4 @@
-const { Tiquet, Usuario, HistorialTiquet, sequelize } = require('../models');
+const { Tiquet, Usuario, HistorialTiquet, ComentarioTiquet, sequelize } = require('../models');
 const nodemailer = require('nodemailer');
 const fs = require('fs');
 const path = require('path');
@@ -143,6 +143,18 @@ const getTiquetPorId = async (req, res) => {
               attributes: ['id', 'nombre', 'email']
             }
           ]
+        },
+        {
+          model: ComentarioTiquet,
+          as: 'comentarios',
+          include: [
+            {
+              model: Usuario,
+              as: 'usuario',
+              attributes: ['id', 'nombre', 'email', 'rol']
+            }
+          ],
+          order: [['fecha_creacion', 'ASC']]
         }
       ]
     });
@@ -309,7 +321,13 @@ const eliminarTiquet = async (req, res) => {
       });
     }
     
-    // Eliminar historial asociado primero
+    // Eliminar comentarios asociados
+    await ComentarioTiquet.destroy({
+      where: { tiquet_id: id },
+      transaction
+    });
+    
+    // Eliminar historial asociado
     await HistorialTiquet.destroy({
       where: { tiquet_id: id },
       transaction
@@ -335,11 +353,173 @@ const eliminarTiquet = async (req, res) => {
   }
 };
 
+// Agregar comentario a un tiquet
+const agregarComentario = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { texto } = req.body;
+    const usuario_id = req.usuario.id;
+    const esAdministrador = req.usuario.rol === 'admin';
+    
+    // Validar campos requeridos
+    if (!texto) {
+      return res.status(400).json({
+        success: false,
+        message: 'El texto del comentario es requerido'
+      });
+    }
+    
+    // Verificar que existe el tiquet
+    const tiquet = await Tiquet.findByPk(id);
+    
+    if (!tiquet) {
+      return res.status(404).json({
+        success: false,
+        message: 'Tiquet no encontrado'
+      });
+    }
+    
+    // Verificar que el tiquet pertenezca al usuario o sea administrador
+    if (!esAdministrador && tiquet.usuario_id !== usuario_id) {
+      return res.status(403).json({
+        success: false,
+        message: 'No tienes permiso para comentar en este tiquet'
+      });
+    }
+    
+    // Crear el comentario
+    const comentario = await ComentarioTiquet.create({
+      tiquet_id: id,
+      usuario_id,
+      texto
+    });
+    
+    // Recuperar el comentario con datos del usuario
+    const comentarioConUsuario = await ComentarioTiquet.findByPk(comentario.id, {
+      include: [{
+        model: Usuario,
+        as: 'usuario',
+        attributes: ['id', 'nombre', 'email', 'rol']
+      }]
+    });
+    
+    return res.status(201).json({
+      success: true,
+      data: comentarioConUsuario,
+      message: 'Comentario agregado exitosamente'
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: 'Error al agregar comentario',
+      error: error.message
+    });
+  }
+};
+
+// Obtener comentarios de un tiquet
+const getComentariosTiquet = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const usuario_id = req.usuario.id;
+    const esAdministrador = req.usuario.rol === 'admin';
+    
+    // Verificar que existe el tiquet
+    const tiquet = await Tiquet.findByPk(id);
+    
+    if (!tiquet) {
+      return res.status(404).json({
+        success: false,
+        message: 'Tiquet no encontrado'
+      });
+    }
+    
+    // Verificar que el tiquet pertenezca al usuario o sea administrador
+    if (!esAdministrador && tiquet.usuario_id !== usuario_id) {
+      return res.status(403).json({
+        success: false,
+        message: 'No tienes permiso para ver comentarios de este tiquet'
+      });
+    }
+    
+    // Obtener comentarios
+    const comentarios = await ComentarioTiquet.findAll({
+      where: { tiquet_id: id },
+      include: [{
+        model: Usuario,
+        as: 'usuario',
+        attributes: ['id', 'nombre', 'email', 'rol']
+      }],
+      order: [['fecha_creacion', 'ASC']]
+    });
+    
+    return res.status(200).json({
+      success: true,
+      data: comentarios
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: 'Error al obtener comentarios',
+      error: error.message
+    });
+  }
+};
+
+// Eliminar un comentario
+const eliminarComentario = async (req, res) => {
+  try {
+    const { tiquet_id, comentario_id } = req.params;
+    const usuario_id = req.usuario.id;
+    const esAdministrador = req.usuario.rol === 'admin';
+    
+    // Buscar el comentario
+    const comentario = await ComentarioTiquet.findOne({
+      where: { 
+        id: comentario_id,
+        tiquet_id: tiquet_id
+      }
+    });
+    
+    if (!comentario) {
+      return res.status(404).json({
+        success: false,
+        message: 'Comentario no encontrado'
+      });
+    }
+    
+    // Verificar permisos (solo el creador del comentario o un admin pueden eliminarlo)
+    if (!esAdministrador && comentario.usuario_id !== usuario_id) {
+      return res.status(403).json({
+        success: false,
+        message: 'No tienes permiso para eliminar este comentario'
+      });
+    }
+    
+    // Eliminar el comentario
+    await comentario.destroy();
+    
+    return res.status(200).json({
+      success: true,
+      message: 'Comentario eliminado exitosamente'
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: 'Error al eliminar el comentario',
+      error: error.message
+    });
+  }
+};
+
 module.exports = {
   getTodosTiquets,
   getMisTiquets,
   getTiquetPorId,
   crearTiquet,
   actualizarTiquet,
-  eliminarTiquet
+  eliminarTiquet,
+  agregarComentario,
+  getComentariosTiquet,
+  eliminarComentario
 };

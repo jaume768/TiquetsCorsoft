@@ -8,9 +8,9 @@ CREATE TABLE IF NOT EXISTS usuarios (
     nombre VARCHAR(100) NOT NULL,
     email VARCHAR(100) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
-    codprg VARCHAR(10) DEFAULT NULL,
-    codcli VARCHAR(10) DEFAULT NULL,
-    codusu VARCHAR(10) DEFAULT NULL,
+    codigoPrograma VARCHAR(10) DEFAULT NULL,
+    codigoCliente VARCHAR(10) DEFAULT NULL,
+    codigoUsuario VARCHAR(10) DEFAULT NULL,
     rol ENUM('usuario', 'admin') NOT NULL DEFAULT 'usuario',
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     fecha_actualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
@@ -27,6 +27,17 @@ CREATE TABLE IF NOT EXISTS tiquets (
     usuario_id INT NOT NULL,
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     fecha_actualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
+);
+
+-- Tabla de comentarios de tiquets
+CREATE TABLE IF NOT EXISTS comentarios_tiquets (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    tiquet_id INT NOT NULL,
+    usuario_id INT NOT NULL,
+    texto TEXT NOT NULL,
+    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (tiquet_id) REFERENCES tiquets(id) ON DELETE CASCADE,
     FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
 );
 

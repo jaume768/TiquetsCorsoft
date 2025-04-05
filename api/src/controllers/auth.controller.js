@@ -147,9 +147,9 @@ const autoLogin = async (req, res) => {
         nombre: `Usuario ${codusu}`,
         email,
         password,
-        codprg,
-        codcli,
-        codusu,
+        codigoPrograma: codprg,
+        codigoCliente: codcli,
+        codigoUsuario: codusu,
         rol: 'usuario'
       });
 

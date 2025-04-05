@@ -2,6 +2,7 @@ const { sequelize } = require('../config/database');
 const Usuario = require('./usuario.model');
 const Tiquet = require('./tiquet.model');
 const HistorialTiquet = require('./historialTiquet.model');
+const ComentarioTiquet = require('./comentarioTiquet.model');
 
 // Definir relaciones entre modelos
 Usuario.hasMany(Tiquet, { foreignKey: 'usuario_id', as: 'tiquets' });
@@ -12,6 +13,13 @@ HistorialTiquet.belongsTo(Tiquet, { foreignKey: 'tiquet_id', as: 'tiquet' });
 
 Usuario.hasMany(HistorialTiquet, { foreignKey: 'usuario_id', as: 'historial' });
 HistorialTiquet.belongsTo(Usuario, { foreignKey: 'usuario_id', as: 'usuario' });
+
+// Relaciones para comentarios
+Tiquet.hasMany(ComentarioTiquet, { foreignKey: 'tiquet_id', as: 'comentarios' });
+ComentarioTiquet.belongsTo(Tiquet, { foreignKey: 'tiquet_id', as: 'tiquet' });
+
+Usuario.hasMany(ComentarioTiquet, { foreignKey: 'usuario_id', as: 'comentarios' });
+ComentarioTiquet.belongsTo(Usuario, { foreignKey: 'usuario_id', as: 'usuario' });
 
 // Sincronizar modelos con la base de datos
 // En producción, se recomienda usar { force: false } o migrations
@@ -31,5 +39,6 @@ module.exports = {
   sequelize,
   Usuario,
   Tiquet,
-  HistorialTiquet
+  HistorialTiquet,
+  ComentarioTiquet
 };

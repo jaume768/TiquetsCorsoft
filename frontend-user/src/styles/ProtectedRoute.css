@@ -1,0 +1,67 @@
+.protected-route-loader {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #f8f9fa;
+}
+
+.loader-content {
+  text-align: center;
+  padding: 2rem;
+  border-radius: 0.5rem;
+  background-color: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  max-width: 400px;
+  width: 100%;
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+.spinner {
+  margin-bottom: 1rem;
+  color: #0d6efd;
+  width: 3rem;
+  height: 3rem;
+}
+
+.loader-text {
+  color: #6c757d;
+  font-size: 1.1rem;
+  margin-top: 1rem;
+}
+
+.access-denied {
+  max-width: 500px;
+  width: 100%;
+  padding: 2rem;
+  text-align: center;
+  border-radius: 0.5rem;
+  background-color: white;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.access-denied-heading {
+  color: #dc3545;
+  margin-bottom: 1rem;
+}
+
+.access-denied-message {
+  margin-bottom: 1.5rem;
+  color: #444;
+}
+
+.access-denied-button {
+  display: inline-block;
+  font-weight: 500;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

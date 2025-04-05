@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const { sequelize } = require('./models');
+const { connectWithRetry } = require('./config/database');
 const authRoutes = require('./routes/auth.routes');
 const ticketRoutes = require('./routes/ticket.routes');
 const userRoutes = require('./routes/user.routes');
@@ -10,7 +11,11 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: '*', // Permitir cualquier origen
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -37,10 +42,14 @@ app.use((err, req, res, next) => {
 app.listen(PORT, async () => {
   console.log(`Servidor corriendo en el puerto ${PORT}`);
   try {
-    await sequelize.authenticate();
-    console.log('Conexión a la base de datos establecida correctamente.');
+    // Intentar conectar con reintentos
+    await connectWithRetry(10, 3000);
+    
+    // Sincronizar modelos una vez que la conexión está establecida
+    await sequelize.sync({ alter: false });
+    console.log('Modelos sincronizados correctamente');
   } catch (error) {
-    console.error('No se pudo conectar a la base de datos:', error);
+    console.error('Error al sincronizar modelos:', error);
   }
 });
 

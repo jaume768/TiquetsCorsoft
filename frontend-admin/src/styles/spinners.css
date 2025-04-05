@@ -1,0 +1,52 @@
+/* Estilos para spinners de carga */
+.loading-spinner-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.loading-spinner-large {
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 0.25rem solid rgba(13, 110, 253, 0.2);
+  border-top-color: #0d6efd;
+  border-radius: 50%;
+  animation: spin 1s infinite linear;
+}
+
+.loading-spinner-small {
+  width: 1.25rem;
+  height: 1.25rem;
+  border: 0.15rem solid rgba(108, 117, 125, 0.2);
+  border-top-color: #6c757d;
+  border-radius: 50%;
+  animation: spin 1s infinite linear;
+  display: inline-block;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Estilos para iconos */
+.icon-edit, .icon-delete, .icon-trash, .icon-check,
+.icon-info, .icon-refresh, .icon-comment, .icon-tickets,
+.icon-new-ticket, .icon-chevron-down, .icon-logout,
+.icon-plus, .icon-search, .icon-x-circle, .icon-alert,
+.icon-comments, .icon-bell, .icon-bell-slash, .icon-send,
+.icon-upload, .icon-pdf, .icon-remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Utilidades adicionales para reemplazar Bootstrap */
+.ms-1 { margin-left: 0.25rem; }
+.ms-2 { margin-left: 0.5rem; }
+.ms-3 { margin-left: 1rem; }
+.ms-4 { margin-left: 1.5rem; }
+
+.me-1 { margin-right: 0.25rem; }
+.me-2 { margin-right: 0.5rem; }
+.me-3 { margin-right: 1rem; }
+.me-4 { margin-right: 1.5rem; }

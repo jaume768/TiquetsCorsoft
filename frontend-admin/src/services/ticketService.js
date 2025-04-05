@@ -1,0 +1,54 @@
+import api from './api';
+
+// Servicio para gestionar las operaciones relacionadas con tiquets (Admin)
+const ticketService = {
+  // Obtener todos los tiquets (solo admin)
+  getTodosTiquets: async (filtros = {}) => {
+    const params = new URLSearchParams();
+    if (filtros.estado) params.append('estado', filtros.estado);
+    if (filtros.prioridad) params.append('prioridad', filtros.prioridad);
+    if (filtros.usuario_id) params.append('usuario_id', filtros.usuario_id);
+    if (filtros.busqueda) params.append('busqueda', filtros.busqueda);
+    
+    const response = await api.get(`/tiquets?${params.toString()}`);
+    return response.data;
+  },
+  
+  // Obtener un tiquet específico por ID
+  getTiquetPorId: async (id) => {
+    const response = await api.get(`/tiquets/${id}`);
+    return response.data;
+  },
+  
+  // Actualizar un tiquet (solo admin)
+  actualizarTiquet: async (id, datos) => {
+    const response = await api.put(`/tiquets/${id}`, datos);
+    return response.data;
+  },
+  
+  // Eliminar un tiquet (solo admin)
+  eliminarTiquet: async (id) => {
+    const response = await api.delete(`/tiquets/${id}`);
+    return response.data;
+  },
+  
+  // Obtener comentarios de un tiquet
+  getComentarios: async (tiquetId) => {
+    const response = await api.get(`/tiquets/${tiquetId}/comentarios`);
+    return response.data;
+  },
+  
+  // Añadir comentario a un tiquet
+  agregarComentario: async (tiquetId, texto) => {
+    const response = await api.post(`/tiquets/${tiquetId}/comentarios`, { texto });
+    return response.data;
+  },
+  
+  // Eliminar un comentario
+  eliminarComentario: async (tiquetId, comentarioId) => {
+    const response = await api.delete(`/tiquets/${tiquetId}/comentarios/${comentarioId}`);
+    return response.data;
+  }
+};
+
+export default ticketService;

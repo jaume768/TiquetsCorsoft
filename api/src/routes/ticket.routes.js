@@ -35,6 +35,11 @@ router.get('/mis-tiquets', verificarToken, ticketController.getMisTiquets);
 router.post('/', verificarToken, upload.single('imagen'), ticketController.crearTiquet);
 router.get('/:id', verificarToken, ticketController.getTiquetPorId);
 
+// Rutas para comentarios de tiquets
+router.post('/:id/comentarios', verificarToken, ticketController.agregarComentario);
+router.get('/:id/comentarios', verificarToken, ticketController.getComentariosTiquet);
+router.delete('/:tiquet_id/comentarios/:comentario_id', verificarToken, ticketController.eliminarComentario);
+
 // Rutas exclusivas para administradores
 router.get('/', [verificarToken, esAdmin], ticketController.getTodosTiquets);
 router.put('/:id', [verificarToken, esAdmin], ticketController.actualizarTiquet);
