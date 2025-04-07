@@ -9,7 +9,45 @@ export const AuthProvider = ({ children }) => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const verificarToken = async () => {
+    const verificarAutenticacion = async () => {
+      // Primero intentamos obtener los parámetros de la URL
+      const params = new URLSearchParams(window.location.search);
+      let codprg = params.get('codprg');
+      let codcli = params.get('codcli');
+      let codusu = params.get('codusu');
+
+      // Si no hay parámetros en la URL, intentamos obtenerlos del localStorage
+      if (!codprg || !codcli || !codusu) {
+        codprg = localStorage.getItem('codprg');
+        codcli = localStorage.getItem('codcli');
+        codusu = localStorage.getItem('codusu');
+      } else {
+        // Si los parámetros están en la URL, los guardamos en localStorage
+        localStorage.setItem('codprg', codprg);
+        localStorage.setItem('codcli', codcli);
+        localStorage.setItem('codusu', codusu);
+      }
+
+      // Si tenemos los parámetros (ya sea de URL o localStorage), intentamos el auto-login
+      if (codprg && codcli && codusu) {
+        try {
+          const response = await api.get(`/auth/auto-login?codprg=${codprg}&codcli=${codcli}&codusu=${codusu}`);
+          localStorage.setItem('token', response.data.token);
+          setUsuario(response.data.usuario);
+          setError(null);
+          setCargando(false);
+          return;
+        } catch (error) {
+          console.error('Error en auto-login:', error);
+          setError(error.response?.data?.message || 'Error en auto-login');
+          // Si falla el auto-login, limpiamos los parámetros guardados
+          localStorage.removeItem('codprg');
+          localStorage.removeItem('codcli');
+          localStorage.removeItem('codusu');
+        }
+      }
+
+      // Si no hay parámetros o falló el auto-login, verificamos el token existente
       const token = localStorage.getItem('token');
       
       if (!token) {
@@ -29,7 +67,7 @@ export const AuthProvider = ({ children }) => {
       }
     };
     
-    verificarToken();
+    verificarAutenticacion();
   }, []);
 
   const login = async (email, password) => {
@@ -68,6 +106,9 @@ export const AuthProvider = ({ children }) => {
 
   const logout = () => {
     localStorage.removeItem('token');
+    localStorage.removeItem('codprg');
+    localStorage.removeItem('codcli');
+    localStorage.removeItem('codusu');
     setUsuario(null);
   };
 

@@ -183,8 +183,38 @@ const autoLogin = async (req, res) => {
   }
 };
 
+// Controlador para verificar token y obtener usuario
+const verificarToken = async (req, res) => {
+  try {
+    // El middleware auth.middleware.js ya verifica el token y añade el usuario decodificado a req.usuario
+    const usuario = await Usuario.findByPk(req.usuario.id);
+    
+    if (!usuario) {
+      return res.status(404).json({
+        success: false,
+        message: 'Usuario no encontrado'
+      });
+    }
+
+    // Devolver datos del usuario (excepto password)
+    const { password: _, ...usuarioData } = usuario.toJSON();
+    
+    return res.status(200).json({
+      success: true,
+      usuario: usuarioData
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: 'Error al verificar token',
+      error: error.message
+    });
+  }
+};
+
 module.exports = {
   login,
   register,
-  autoLogin
+  autoLogin,
+  verificarToken
 };

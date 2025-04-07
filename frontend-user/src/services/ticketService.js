@@ -7,13 +7,13 @@ const ticketService = {
     const params = new URLSearchParams();
     if (filtros.estado) params.append('estado', filtros.estado);
     
-    const response = await api.get(`/tiquets/mis-tiquets?${params.toString()}`);
+    const response = await api.get(`/tickets/mis-tiquets?${params.toString()}`);
     return response.data;
   },
   
   // Obtener un tiquet específico por ID
   getTiquetPorId: async (id) => {
-    const response = await api.get(`/tiquets/${id}`);
+    const response = await api.get(`/tickets/${id}`);
     return response.data;
   },
   
@@ -32,7 +32,7 @@ const ticketService = {
       formData.append('imagen', tiquet.imagen);
     }
     
-    const response = await api.post('/tiquets', formData, {
+    const response = await api.post('/tickets', formData, {
       headers: {
         'Content-Type': 'multipart/form-data'
       }
@@ -43,7 +43,7 @@ const ticketService = {
   
   // Obtener comentarios de un tiquet
   getComentarios: async (tiquetId) => {
-    const response = await api.get(`/tiquets/${tiquetId}/comentarios`);
+    const response = await api.get(`/tickets/${tiquetId}/comentarios`);
     return response.data;
   },
   

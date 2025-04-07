@@ -173,7 +173,7 @@ const CrearTiquetPage = () => {
       });
       
       showSuccess('¡Ticket creado con éxito!');
-      navigate(`/tiquet/${response.data.id}`);
+      navigate(`/tiquets/${response.data.id}`);
     } catch (error) {
       console.error('Error al crear ticket:', error);
       

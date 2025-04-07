@@ -56,5 +56,5 @@ CREATE TABLE IF NOT EXISTS historial_tiquets (
 
 -- Crear usuario administrador por defecto
 INSERT INTO usuarios (nombre, email, password, rol) 
-VALUES ('Administrador', 'admin@example.com', '$2b$10$3iDXxBuGpGrIY/Zy3PRp0eNiYMJwO5lkVZ0T3XF/.tJFQnRLUuVbu', 'admin');
--- Nota: El password es "admin123" hasheado con bcrypt
+VALUES ('Administrador', 'admin@example.com', '$2a$10$Yiw5CbgxC.yGLvcZYUdq0.CgeaohuvOM9lV.PO0/kk19z9aFKWVGC', 'admin');
+-- Nota: El password es "jaume2002" hasheado con bcrypt
