@@ -1,0 +1,52 @@
+/* Iconos adicionales para Dashboard */
+.icon-ticket::before {
+  content: "\1F3AB"; /* Ticket */
+}
+
+.icon-hourglass::before {
+  content: "\23F3"; /* Reloj de arena */
+}
+
+.icon-check-circle::before {
+  content: "\2714\FE0F"; /* Marca de verificación en círculo */
+}
+
+.icon-warning::before {
+  content: "\26A0\FE0F"; /* Signo de advertencia */
+}
+
+.icon-arrow-right::before {
+  content: "\2192"; /* Flecha derecha */
+}
+
+.icon-eye::before {
+  content: "\1F441"; /* Ojo */
+}
+
+.icon-home::before {
+  content: "\1F3E0"; /* Casa */
+}
+
+.icon-pencil::before {
+  content: "\270F\FE0F"; /* Lápiz */
+}
+
+.icon-trash::before {
+  content: "\1F5D1\FE0F"; /* Papelera */
+}
+
+.icon-person-plus::before {
+  content: "\1F464\002B"; /* Persona + */
+}
+
+.icon-x::before {
+  content: "\2715"; /* X */
+}
+
+.icon-chevron-left::before {
+  content: "\2039"; /* Flecha angular izquierda */
+}
+
+.icon-chevron-right::before {
+  content: "\203A"; /* Flecha angular derecha */
+}

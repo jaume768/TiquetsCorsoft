@@ -1,5 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import '../styles/components/icons.css';
+import '../styles/components/dashboard-icons.css';
 import '../styles/NotFoundPage.css';
 
 const NotFoundPage = () => {
@@ -13,7 +15,7 @@ const NotFoundPage = () => {
         </p>
         <div className="not-found-actions">
           <Link to="/dashboard" className="not-found-button">
-            <i className="bi bi-house-door-fill"></i> Volver al Dashboard
+            <i className="icon icon-home"></i> Volver al Dashboard
           </Link>
         </div>
       </div>

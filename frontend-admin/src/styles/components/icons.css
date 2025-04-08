@@ -1,0 +1,116 @@
+/* CSS Puro para iconos - reemplazo de Bootstrap Icons */
+.icon {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+  vertical-align: -0.125em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Iconos de navegación */
+.icon-dashboard::before {
+  content: "\1F4CA"; /* Gráfico de barras */
+}
+
+.icon-tickets::before {
+  content: "\1F4C3"; /* Portapapeles */
+}
+
+.icon-users::before {
+  content: "\1F465"; /* Silueta de personas */
+}
+
+.icon-headset::before {
+  content: "\1F3A7"; /* Auriculares */
+}
+
+/* Iconos de acciones */
+.icon-logout::before {
+  content: "\2192"; /* Flecha hacia la derecha */
+}
+
+.icon-chevron-left::before {
+  content: "\2039"; /* Flecha angular izquierda */
+}
+
+.icon-chevron-right::before {
+  content: "\203A"; /* Flecha angular derecha */
+}
+
+.icon-bell::before {
+  content: "\1F514"; /* Campana */
+}
+
+.icon-search::before {
+  content: "\1F50D"; /* Lupa */
+}
+
+.icon-person::before {
+  content: "\1F464"; /* Silueta de persona */
+}
+
+.icon-gear::before {
+  content: "\2699"; /* Engranaje */
+}
+
+.icon-close::before {
+  content: "\2715"; /* Cruz */
+}
+
+.icon-loading::before {
+  content: "\21BB"; /* Flecha circular */
+}
+
+/* Estado de los tickets */
+.icon-pending::before {
+  content: "\23F3"; /* Reloj de arena */
+}
+
+.icon-process::before {
+  content: "\1F503"; /* Flechas circulares */
+}
+
+.icon-resolved::before {
+  content: "\2714"; /* Marca de verificación */
+}
+
+.icon-closed::before {
+  content: "\1F512"; /* Candado */
+}
+
+/* Estilos adicionales */
+.icon-spin {
+  animation: spin 1.5s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Ajuste de tamaños */
+.icon-sm {
+  font-size: 0.875em;
+}
+
+.icon-lg {
+  font-size: 1.33em;
+}
+
+.icon-xl {
+  font-size: 1.5em;
+}
+
+.icon-2x {
+  font-size: 2em;
+}

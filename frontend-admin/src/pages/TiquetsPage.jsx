@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import ticketService from '../services/ticketService';
 import '../styles/TiquetsPage.css';
+import '../styles/components/icons.css';
 
 const TiquetsPage = () => {
   const [tiquets, setTiquets] = useState([]);
@@ -141,7 +142,7 @@ const TiquetsPage = () => {
                   onChange={handleInputChange}
                 />
                 <button type="submit" className="busqueda-button">
-                  <i className="bi bi-search"></i>
+                  <i className="icon icon-search"></i>
                 </button>
               </div>
             </div>
@@ -152,7 +153,7 @@ const TiquetsPage = () => {
                 className="reset-button"
                 onClick={resetFiltros}
               >
-                <i className="bi bi-x-circle"></i> Limpiar filtros
+                <i className="icon icon-close"></i> Limpiar filtros
               </button>
             </div>
           </div>
@@ -168,21 +169,19 @@ const TiquetsPage = () => {
       <div className="tiquets-content">
         {loading ? (
           <div className="tiquets-loading">
-            <div className="spinner-border text-primary" role="status">
-              <span className="visually-hidden">Cargando...</span>
-            </div>
+            <i className="icon icon-loading icon-spin icon-2x"></i>
             <p>Cargando tickets...</p>
           </div>
         ) : tiquets.length === 0 ? (
           <div className="no-tiquets">
-            <i className="bi bi-exclamation-circle"></i>
+            <i className="icon icon-tickets icon-2x"></i>
             <p>No se encontraron tickets con los filtros seleccionados</p>
             {(filtros.estado || filtros.prioridad || filtros.busqueda) && (
               <button 
                 className="reset-button mt-3"
                 onClick={resetFiltros}
               >
-                <i className="bi bi-arrow-counterclockwise"></i> Mostrar todos los tickets
+                <i className="icon icon-search"></i> Mostrar todos los tickets
               </button>
             )}
           </div>
@@ -222,7 +221,7 @@ const TiquetsPage = () => {
                       </td>
                       <td className="tiquet-acciones">
                         <Link to={`/tiquets/${tiquet.id}`} className="btn-ver">
-                          <i className="bi bi-eye-fill"></i> Ver
+                          <i className="icon icon-eye"></i> Ver
                         </Link>
                       </td>
                     </tr>
@@ -239,7 +238,7 @@ const TiquetsPage = () => {
                   onClick={() => cambiarPagina(paginaActual - 1)}
                   disabled={paginaActual === 1}
                 >
-                  <i className="bi bi-chevron-left"></i>
+                  <i className="icon icon-chevron-left"></i>
                 </button>
                 
                 {[...Array(totalPaginas).keys()].map(numero => (
@@ -257,7 +256,7 @@ const TiquetsPage = () => {
                   onClick={() => cambiarPagina(paginaActual + 1)}
                   disabled={paginaActual === totalPaginas}
                 >
-                  <i className="bi bi-chevron-right"></i>
+                  <i className="icon icon-chevron-right"></i>
                 </button>
               </div>
             )}

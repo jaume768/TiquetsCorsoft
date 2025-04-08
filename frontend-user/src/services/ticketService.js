@@ -19,17 +19,23 @@ const ticketService = {
   
   // Crear un nuevo tiquet
   crearTiquet: async (tiquet) => {
-    // Usamos FormData para poder enviar archivos
-    const formData = new FormData();
-    formData.append('titulo', tiquet.titulo);
-    formData.append('descripcion', tiquet.descripcion);
-    
-    if (tiquet.prioridad) {
-      formData.append('prioridad', tiquet.prioridad);
-    }
-    
-    if (tiquet.imagen) {
-      formData.append('imagen', tiquet.imagen);
+    // Comprobamos si tiquet ya es un FormData
+    let formData;
+    if (tiquet instanceof FormData) {
+      formData = tiquet;
+    } else {
+      // Si no es FormData, lo creamos
+      formData = new FormData();
+      formData.append('titulo', tiquet.titulo);
+      formData.append('descripcion', tiquet.descripcion);
+      
+      if (tiquet.prioridad) {
+        formData.append('prioridad', tiquet.prioridad);
+      }
+      
+      if (tiquet.imagen) {
+        formData.append('imagen', tiquet.imagen);
+      }
     }
     
     const response = await api.post('/tickets', formData, {
@@ -49,13 +55,13 @@ const ticketService = {
   
   // Añadir comentario a un tiquet
   agregarComentario: async (tiquetId, texto) => {
-    const response = await api.post(`/tiquets/${tiquetId}/comentarios`, { texto });
+    const response = await api.post(`/tickets/${tiquetId}/comentarios`, { texto });
     return response.data;
   },
   
   // Eliminar un comentario
   eliminarComentario: async (tiquetId, comentarioId) => {
-    const response = await api.delete(`/tiquets/${tiquetId}/comentarios/${comentarioId}`);
+    const response = await api.delete(`/tickets/${tiquetId}/comentarios/${comentarioId}`);
     return response.data;
   }
 };

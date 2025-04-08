@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 import AuthContext from '../context/AuthContext';
 import ticketService from '../services/ticketService';
 import '../styles/DashboardPage.css';
+import '../styles/components/icons.css';
+import '../styles/components/dashboard-icons.css';
 
 const DashboardPage = () => {
   const { usuario } = useContext(AuthContext);
@@ -114,7 +116,7 @@ const DashboardPage = () => {
       <div className="dashboard-stats">
         <div className="stats-card total-tiquets">
           <div className="stats-icon">
-            <i className="bi bi-ticket-perforated-fill"></i>
+            <i className="icon icon-ticket"></i>
           </div>
           <div className="stats-content">
             <h3 className="stats-number">{stats.totalTiquets}</h3>
@@ -124,7 +126,7 @@ const DashboardPage = () => {
         
         <div className="stats-card pendientes">
           <div className="stats-icon">
-            <i className="bi bi-hourglass-split"></i>
+            <i className="icon icon-hourglass"></i>
           </div>
           <div className="stats-content">
             <h3 className="stats-number">{stats.tiquetsPendientes}</h3>
@@ -134,7 +136,7 @@ const DashboardPage = () => {
         
         <div className="stats-card en-proceso">
           <div className="stats-icon">
-            <i className="bi bi-gear"></i>
+            <i className="icon icon-gear"></i>
           </div>
           <div className="stats-content">
             <h3 className="stats-number">{stats.tiquetsEnProceso}</h3>
@@ -144,7 +146,7 @@ const DashboardPage = () => {
         
         <div className="stats-card resueltos">
           <div className="stats-icon">
-            <i className="bi bi-check-circle-fill"></i>
+            <i className="icon icon-check-circle"></i>
           </div>
           <div className="stats-content">
             <h3 className="stats-number">{stats.tiquetsResueltos}</h3>
@@ -154,7 +156,7 @@ const DashboardPage = () => {
         
         <div className="stats-card alta-prioridad">
           <div className="stats-icon">
-            <i className="bi bi-exclamation-triangle-fill"></i>
+            <i className="icon icon-warning"></i>
           </div>
           <div className="stats-content">
             <h3 className="stats-number">{stats.prioridadAlta + stats.prioridadUrgente}</h3>
@@ -168,7 +170,7 @@ const DashboardPage = () => {
           <div className="section-header">
             <h2 className="section-title">Últimos Tickets</h2>
             <Link to="/tiquets" className="view-all-btn">
-              Ver todos <i className="bi bi-arrow-right"></i>
+              Ver todos <i className="icon icon-arrow-right"></i>
             </Link>
           </div>
           
@@ -210,7 +212,7 @@ const DashboardPage = () => {
                         </td>
                         <td className="tiquet-acciones">
                           <Link to={`/tiquets/${tiquet.id}`} className="btn-ver">
-                            <i className="bi bi-eye-fill"></i> Ver
+                            <i className="icon icon-eye"></i> Ver
                           </Link>
                         </td>
                       </tr>

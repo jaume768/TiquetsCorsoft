@@ -28,12 +28,7 @@ const CrearTiquetPage = () => {
     { value: 'otro', label: 'Otro' }
   ];
   
-  const prioridadesTiquet = [
-    { value: 'baja', label: 'Baja' },
-    { value: 'media', label: 'Media' },
-    { value: 'alta', label: 'Alta' },
-    { value: 'urgente', label: 'Urgente' }
-  ];
+  // La prioridad se establece por defecto como 'media' y no se permite al usuario modificarla
   
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -250,23 +245,7 @@ const CrearTiquetPage = () => {
                     </select>
                   </div>
                   
-                  <div className="form-group form-group-half">
-                    <label htmlFor="prioridad">Prioridad</label>
-                    <select
-                      id="prioridad"
-                      name="prioridad"
-                      className="form-control"
-                      value={formulario.prioridad}
-                      onChange={handleInputChange}
-                      disabled={cargando}
-                    >
-                      {prioridadesTiquet.map(prioridad => (
-                        <option key={prioridad.value} value={prioridad.value}>
-                          {prioridad.label}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
+                  {/* La selección de prioridad ha sido eliminada - se establece automáticamente como 'media' */}
                 </div>
                 
                 <div className="form-group">
