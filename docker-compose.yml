@@ -14,7 +14,7 @@ services:
     ports:
       - "3306:3306"
     volumes:
-      - ./db/data:/var/lib/mysql
+      - ./mysql-data:/var/lib/mysql:rw
       - ./db/init:/docker-entrypoint-initdb.d
     networks:
       - tiquets-network

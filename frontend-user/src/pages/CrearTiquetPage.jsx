@@ -1,8 +1,9 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { showSuccess, showError, showWarning } from '../components/Notification';
 import ticketService from '../services/ticketService';
 import AuthContext from '../context/AuthContext';
+import emailjs from '@emailjs/browser';
 import '../styles/CrearTiquetPage.css';
 
 const CrearTiquetPage = () => {
@@ -134,6 +135,43 @@ const CrearTiquetPage = () => {
     return Object.keys(nuevosErrores).length === 0;
   };
   
+  // Función para enviar email a través de EmailJS
+  const enviarEmailNotificacion = async (ticket) => {
+    try {
+      // Configuración de EmailJS usando variables de entorno
+      const serviceId = process.env.REACT_APP_EMAILJS_SERVICE_ID;
+      const templateId = process.env.REACT_APP_EMAILJS_TEMPLATE_ID;
+      const publicKey = process.env.REACT_APP_EMAILJS_PUBLIC_KEY;
+      const adminEmail = process.env.REACT_APP_ADMIN_EMAIL;
+      
+      // Verificar que las variables de entorno estén configuradas
+      if (!serviceId || !templateId || !publicKey) {
+        console.error('Falta configuración de EmailJS en variables de entorno');
+        return;
+      }
+      
+      // Datos para la plantilla de EmailJS
+      const templateParams = {
+        to_email: adminEmail || 'admin@ejemplo.com',
+        ticket_id: ticket.id,
+        user_name: usuario.nombre || 'Usuario',
+        user_email: usuario.email || 'No disponible',
+        ticket_title: ticket.titulo,
+        ticket_description: ticket.descripcion,
+        ticket_type: ticket.tipo,
+        ticket_priority: ticket.prioridad,
+        ticket_date: new Date().toLocaleString()
+      };
+      
+      // Enviar el email
+      const response = await emailjs.send(serviceId, templateId, templateParams, publicKey);
+      console.log('Email enviado con éxito:', response.status, response.text);
+    } catch (error) {
+      console.error('Error al enviar email de notificación:', error);
+      // No mostrar error al usuario, pues el ticket ya se creó correctamente
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     
@@ -166,6 +204,11 @@ const CrearTiquetPage = () => {
           URL.revokeObjectURL(preview.url);
         }
       });
+      
+      // Enviar email de notificación usando EmailJS
+      if (response.data && response.data.id) {
+        await enviarEmailNotificacion(response.data);
+      }
       
       showSuccess('¡Ticket creado con éxito!');
       navigate(`/tiquets/${response.data.id}`);
