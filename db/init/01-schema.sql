@@ -8,9 +8,9 @@ CREATE TABLE IF NOT EXISTS usuarios (
     nombre VARCHAR(100) NOT NULL,
     email VARCHAR(100) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
-    codigoPrograma VARCHAR(10) DEFAULT NULL,
-    codigoCliente VARCHAR(10) DEFAULT NULL,
-    codigoUsuario VARCHAR(10) DEFAULT NULL,
+    codprg VARCHAR(10) DEFAULT NULL,
+    codcli VARCHAR(10) DEFAULT NULL,
+    codusu VARCHAR(10) DEFAULT NULL,
     rol ENUM('usuario', 'admin') NOT NULL DEFAULT 'usuario',
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     fecha_actualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP

@@ -1,116 +1,364 @@
-.ticket-detail-container {
-  padding-bottom: 2rem;
-  animation: fadeIn 0.3s ease-out;
+/* Animaciones */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-.ticket-actions-bar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+@keyframes slideIn {
+  from { transform: translateX(-20px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+/* Contenedor principal */
+.container-fluid {
+  max-width: 1600px;
+  animation: fadeIn 0.4s ease-out;
+}
+
+/* Barra de acciones */
+.d-flex.justify-content-between {
   margin-bottom: 1.5rem;
-  flex-wrap: wrap;
-  gap: 1rem;
+  padding: 0.5rem;
+  border-radius: 8px;
+  animation: slideIn 0.5s ease-out;
 }
 
-.back-button {
+/* Botón de volver */
+.btn-outline-secondary {
   display: flex;
   align-items: center;
   gap: 0.5rem;
   font-weight: 500;
-  padding: 0.5rem 1rem;
-  border-radius: 0.375rem;
-  transition: all 0.2s ease;
+  padding: 0.6rem 1.2rem;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+  border-width: 1px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
-.back-button:hover {
-  background-color: #e9ecef;
+.btn-outline-secondary:hover {
+  background-color: #f1f3f5;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-.ticket-action-buttons {
-  display: flex;
-  gap: 0.5rem;
+/* Botones de acción */
+.btn-primary, .btn-danger, .btn-secondary {
+  padding: 0.6rem 1.2rem;
+  border-radius: 6px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  border: none;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.ticket-main-card {
-  border-radius: 0.5rem;
-  overflow: hidden;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
-  margin-bottom: 1.5rem;
-}
-
-.ticket-header {
+.btn-primary {
   background-color: #0d6efd;
-  color: white;
+}
+
+.btn-primary:hover {
+  background-color: #0b5ed7;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(13, 110, 253, 0.25);
+}
+
+.btn-danger {
+  background-color: #dc3545;
+}
+
+.btn-danger:hover {
+  background-color: #bb2d3b;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(220, 53, 69, 0.25);
+}
+
+.btn-secondary {
+  background-color: #6c757d;
+}
+
+.btn-secondary:hover {
+  background-color: #5c636a;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(108, 117, 125, 0.25);
+}
+
+/* Tarjetas */
+.card {
+  border: none;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  margin-bottom: 1.5rem;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  animation: fadeIn 0.5s ease-out;
+}
+
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
+}
+
+/* Encabezados de tarjeta */
+.card-header {
   padding: 1rem 1.5rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  border-bottom: none;
 }
 
-.ticket-title {
+.card-header.bg-primary {
+  background: linear-gradient(135deg, #0d6efd, #0a58ca) !important;
+  color: white;
+}
+
+.card-header.bg-info {
+  background: linear-gradient(135deg, #0dcaf0, #0aa2c0) !important;
+  color: white;
+}
+
+.card-header.bg-secondary {
+  background: linear-gradient(135deg, #6c757d, #5a6268) !important;
+  color: white;
+}
+
+/* Títulos de tarjeta */
+.card-header h2, .card-header h5 {
   margin: 0;
-  font-size: 1.25rem;
   font-weight: 600;
+  letter-spacing: 0.5px;
 }
 
-.ticket-status-badge {
-  padding: 0.35rem 0.75rem;
-  border-radius: 0.25rem;
+/* Badges de estado */
+.badge {
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
   font-weight: 500;
   font-size: 0.85rem;
   text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.ticket-content {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
+.badge.bg-warning {
+  background-color: #ffc107 !important;
+  color: #212529;
+}
+
+.badge.bg-info {
+  background-color: #0dcaf0 !important;
+}
+
+.badge.bg-success {
+  background-color: #198754 !important;
+}
+
+.badge.bg-secondary {
+  background-color: #6c757d !important;
+}
+
+.badge.bg-danger {
+  background-color: #dc3545 !important;
+}
+
+/* Contenido de la tarjeta */
+.card-body {
   padding: 1.5rem;
 }
 
-.ticket-metadata {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1.5rem;
+/* Filas de información */
+.row {
+  margin-bottom: 1rem;
 }
 
-.metadata-item {
+/* Información del ticket */
+.card-body p {
+  margin-bottom: 0.75rem;
+  font-size: 1rem;
+  color: #495057;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.card-body p strong {
+  font-weight: 600;
+  color: #343a40;
+  min-width: 120px;
+}
+
+/* Títulos de sección */
+.card-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #343a40;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid #e9ecef;
+}
+
+/* Descripción del ticket */
+.card-text {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #495057;
+  background-color: #f8f9fa;
+  padding: 1rem;
+  border-radius: 8px;
+  border-left: 4px solid #0d6efd;
+}
+
+/* Imagen adjunta */
+.img-fluid {
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.img-fluid:hover {
+  transform: scale(1.02);
+}
+
+/* Formulario de edición */
+form {
+  background-color: #f8f9fa;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.05);
+  margin-bottom: 1.5rem;
+  animation: fadeIn 0.5s ease-out;
+}
+
+/* Campos del formulario */
+.form-label {
+  font-weight: 600;
+  color: #343a40;
   margin-bottom: 0.5rem;
 }
 
-.metadata-label {
-  font-weight: 600;
-  color: #495057;
-  display: block;
-  margin-bottom: 0.25rem;
+.form-control, .form-select {
+  border: 1px solid #ced4da;
+  border-radius: 6px;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
 }
 
-.status-badge {
-  display: inline-flex;
-  align-items: center;
-  padding: 0.35rem 0.75rem;
-  border-radius: 0.25rem;
-  font-weight: 500;
-  font-size: 0.85rem;
+.form-control:focus, .form-select:focus {
+  border-color: #0d6efd;
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
 }
 
-.ticket-edit-form {
-  background-color: #f8f9fa;
-  padding: 1.25rem;
-  border-radius: 0.5rem;
-  margin-bottom: 1.5rem;
+.form-control::placeholder {
+  color: #adb5bd;
+  font-style: italic;
+}
+
+textarea.form-control {
+  min-height: 100px;
+  resize: vertical;
 }
 
 .form-row {
   display: flex;
   flex-wrap: wrap;
-  gap: 1rem;
-  margin-bottom: 1rem;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
 }
 
-.form-group {
-  flex: 1;
-  min-width: 200px;
+.form-row .form-group {
+  flex: 1 1 300px;
+}
+
+/* Historial de cambios */
+.list-group-item {
+  border: none;
+  border-bottom: 1px solid #e9ecef;
+  padding: 1rem 1.5rem;
+  transition: background-color 0.2s ease;
+}
+
+.list-group-item:last-child {
+  border-bottom: none;
+}
+
+.list-group-item:hover {
+  background-color: #f8f9fa;
+}
+
+.list-group-item h6 {
+  font-weight: 600;
+  color: #343a40;
+  margin-bottom: 0.5rem;
+}
+
+.list-group-item p {
+  margin-bottom: 0.5rem;
+  color: #495057;
+}
+
+.list-group-item small {
+  color: #6c757d;
+}
+
+/* Spinner de carga */
+.loading-spinner-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+}
+
+.loading-spinner-large {
+  width: 50px;
+  height: 50px;
+  border: 5px solid #f3f3f3;
+  border-top: 5px solid #0d6efd;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.loading-spinner-small {
+  width: 20px;
+  height: 20px;
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid #0d6efd;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Iconos */
+.icon-edit, .icon-delete {
+  margin-right: 0.5rem;
+  font-size: 0.9rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .card-body p strong {
+    min-width: 90px;
+  }
+  
+  .d-flex.justify-content-between {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .d-flex.justify-content-between div {
+    width: 100%;
+    display: flex;
+    gap: 0.5rem;
+  }
+  
+  .btn-primary, .btn-danger, .btn-secondary {
+    flex: 1;
+  }
 }
 
 .section-title {

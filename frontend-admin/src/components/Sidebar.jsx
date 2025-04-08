@@ -42,7 +42,7 @@ const Sidebar = ({ onToggle, isCollapsed }) => {
               <span>{usuario?.nombre?.charAt(0) || 'A'}</span>
             </div>
             <div className="user-info">
-              <div className="user-name">{usuario?.nombre || 'Admin'}</div>
+              <div className="user-name-sidebar">{usuario?.nombre || 'Admin'}</div>
               <div className="user-role">Administrador</div>
             </div>
           </>

@@ -360,9 +360,9 @@ const DetalleTiquetPage = () => {
             <div className="card-body">
               <p><strong>Nombre:</strong> {tiquet.usuario?.nombre}</p>
               <p><strong>Email:</strong> {tiquet.usuario?.email}</p>
-              {tiquet.usuario?.codigoPrograma && <p><strong>Programa:</strong> {tiquet.usuario.codigoPrograma}</p>}
-              {tiquet.usuario?.codigoCliente && <p><strong>Cliente:</strong> {tiquet.usuario.codigoCliente}</p>}
-              {tiquet.usuario?.codigoUsuario && <p><strong>Código de usuario:</strong> {tiquet.usuario.codigoUsuario}</p>}
+              {tiquet.usuario?.codprg && <p><strong>Programa:</strong> {tiquet.usuario.codprg}</p>}
+              {tiquet.usuario?.codcli && <p><strong>Cliente:</strong> {tiquet.usuario.codcli}</p>}
+              {tiquet.usuario?.codusu && <p><strong>Código de usuario:</strong> {tiquet.usuario.codusu}</p>}
             </div>
           </div>
           

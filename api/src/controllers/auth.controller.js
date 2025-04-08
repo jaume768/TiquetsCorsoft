@@ -133,7 +133,6 @@ const register = async (req, res) => {
 const autoLogin = async (req, res) => {
   try {
     const { codprg, codcli, codusu } = req.query;
-    console.log('Parámetros de URL:', { codprg, codcli, codusu });
 
     // Validar que se enviaron los parámetros necesarios
     if (!codprg || !codcli || !codusu) {
@@ -145,7 +144,6 @@ const autoLogin = async (req, res) => {
 
     // Buscar usuario por los códigos proporcionados
     const usuario = await Usuario.findByUrlParams(codprg, codcli, codusu);
-    console.log('Usuario encontrado:', usuario);
 
     // Si no existe el usuario, crear uno con valores predeterminados
     if (!usuario) {
@@ -158,9 +156,9 @@ const autoLogin = async (req, res) => {
         nombre: `Usuario ${codusu}`,
         email,
         password,
-        codigoPrograma: codprg,
-        codigoCliente: codcli,
-        codigoUsuario: codusu,
+        codprg: codprg,
+        codcli: codcli,
+        codusu: codusu,
         rol: 'usuario'
       });
 

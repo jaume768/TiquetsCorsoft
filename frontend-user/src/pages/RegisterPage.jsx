@@ -12,9 +12,9 @@ const RegisterPage = () => {
     email: '',
     password: '',
     confirmPassword: '',
-    codigoPrograma: '',
-    codigoCliente: '',
-    codigoUsuario: ''
+    codprg: '',
+    codcli: '',
+    codusu: ''
   });
   
   const [errors, setErrors] = useState({});
@@ -70,16 +70,16 @@ const RegisterPage = () => {
       newErrors.confirmPassword = 'Las contraseñas no coinciden';
     }
     
-    if (!formData.codigoPrograma.trim()) {
-      newErrors.codigoPrograma = 'El código de programa es obligatorio';
+    if (!formData.codprg.trim()) {
+      newErrors.codprg = 'El código de programa es obligatorio';
     }
     
-    if (!formData.codigoCliente.trim()) {
-      newErrors.codigoCliente = 'El código de cliente es obligatorio';
+    if (!formData.codcli.trim()) {
+      newErrors.codcli = 'El código de cliente es obligatorio';
     }
     
-    if (!formData.codigoUsuario.trim()) {
-      newErrors.codigoUsuario = 'El código de usuario es obligatorio';
+    if (!formData.codusu.trim()) {
+      newErrors.codusu = 'El código de usuario es obligatorio';
     }
     
     setErrors(newErrors);
@@ -196,49 +196,49 @@ const RegisterPage = () => {
             
             <div className="form-row">
               <div className="form-group">
-                <label htmlFor="codigoPrograma">Código Programa <span className="campo-requerido">*</span></label>
+                <label htmlFor="codprg">Código Programa <span className="campo-requerido">*</span></label>
                 <input
                   type="text"
-                  id="codigoPrograma"
-                  name="codigoPrograma"
-                  className={`form-control ${errors.codigoPrograma ? 'is-invalid' : ''}`}
+                  id="codprg"
+                  name="codprg"
+                  className={`form-control ${errors.codprg ? 'is-invalid' : ''}`}
                   placeholder="Ej: PROG001"
-                  value={formData.codigoPrograma}
+                  value={formData.codprg}
                   onChange={handleChange}
                   disabled={loading}
                 />
-                {errors.codigoPrograma && <div className="invalid-feedback">{errors.codigoPrograma}</div>}
+                {errors.codprg && <div className="invalid-feedback">{errors.codprg}</div>}
               </div>
               
               <div className="form-group">
-                <label htmlFor="codigoCliente">Código Cliente <span className="campo-requerido">*</span></label>
+                <label htmlFor="codcli">Código Cliente <span className="campo-requerido">*</span></label>
                 <input
                   type="text"
-                  id="codigoCliente"
-                  name="codigoCliente"
-                  className={`form-control ${errors.codigoCliente ? 'is-invalid' : ''}`}
+                  id="codcli"
+                  name="codcli"
+                  className={`form-control ${errors.codcli ? 'is-invalid' : ''}`}
                   placeholder="Ej: CLI123"
-                  value={formData.codigoCliente}
+                  value={formData.codcli}
                   onChange={handleChange}
                   disabled={loading}
                 />
-                {errors.codigoCliente && <div className="invalid-feedback">{errors.codigoCliente}</div>}
+                {errors.codcli && <div className="invalid-feedback">{errors.codcli}</div>}
               </div>
             </div>
             
             <div className="form-group">
-              <label htmlFor="codigoUsuario">Código Usuario <span className="campo-requerido">*</span></label>
+              <label htmlFor="codusu">Código Usuario <span className="campo-requerido">*</span></label>
               <input
                 type="text"
-                id="codigoUsuario"
-                name="codigoUsuario"
-                className={`form-control ${errors.codigoUsuario ? 'is-invalid' : ''}`}
+                id="codusu"
+                name="codusu"
+                className={`form-control ${errors.codusu ? 'is-invalid' : ''}`}
                 placeholder="Ej: USR456"
-                value={formData.codigoUsuario}
+                value={formData.codusu}
                 onChange={handleChange}
                 disabled={loading}
               />
-              {errors.codigoUsuario && <div className="invalid-feedback">{errors.codigoUsuario}</div>}
+              {errors.codusu && <div className="invalid-feedback">{errors.codusu}</div>}
             </div>
             
             <button
