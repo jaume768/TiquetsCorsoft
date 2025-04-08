@@ -6,6 +6,7 @@ const { connectWithRetry } = require('./config/database');
 const authRoutes = require('./routes/auth.routes');
 const ticketRoutes = require('./routes/ticket.routes');
 const userRoutes = require('./routes/user.routes');
+const loginRegistroRoutes = require('./routes/loginRegistro.routes');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -28,6 +29,7 @@ app.get('/', (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/tickets', ticketRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/login-registros', loginRegistroRoutes);
 
 // Manejador de errores global
 app.use((err, req, res, next) => {

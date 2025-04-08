@@ -9,6 +9,7 @@ import DashboardPage from './pages/DashboardPage';
 import TiquetsPage from './pages/TiquetsPage';
 import DetalleTiquetPage from './pages/DetalleTiquetPage';
 import UsuariosPage from './pages/UsuariosPage';
+import LoginRegistrosPage from './pages/LoginRegistrosPage';
 import NotFoundPage from './pages/NotFoundPage';
 // Estilos propios sin dependencias de Bootstrap
 import './styles/main.css';
@@ -51,6 +52,13 @@ function App() {
             <ProtectedRoute>
               <Layout>
                 <UsuariosPage />
+              </Layout>
+            </ProtectedRoute>
+          } />
+          <Route path="/login-registros" element={
+            <ProtectedRoute>
+              <Layout>
+                <LoginRegistrosPage />
               </Layout>
             </ProtectedRoute>
           } />

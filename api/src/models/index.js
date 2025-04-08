@@ -3,6 +3,7 @@ const Usuario = require('./usuario.model');
 const Tiquet = require('./tiquet.model');
 const HistorialTiquet = require('./historialTiquet.model');
 const ComentarioTiquet = require('./comentarioTiquet.model');
+const LoginRegistro = require('./loginRegistro.model');
 
 // Definir relaciones entre modelos
 Usuario.hasMany(Tiquet, { foreignKey: 'usuario_id', as: 'tiquets' });
@@ -20,6 +21,10 @@ ComentarioTiquet.belongsTo(Tiquet, { foreignKey: 'tiquet_id', as: 'tiquet' });
 
 Usuario.hasMany(ComentarioTiquet, { foreignKey: 'usuario_id', as: 'comentarios' });
 ComentarioTiquet.belongsTo(Usuario, { foreignKey: 'usuario_id', as: 'usuario' });
+
+// Relaciones para registros de login
+Usuario.hasMany(LoginRegistro, { foreignKey: 'usuario_id', as: 'login_registros' });
+LoginRegistro.belongsTo(Usuario, { foreignKey: 'usuario_id', as: 'usuario' });
 
 // Sincronizar modelos con la base de datos
 // En producción, se recomienda usar { force: false } o migrations
@@ -40,5 +45,6 @@ module.exports = {
   Usuario,
   Tiquet,
   HistorialTiquet,
-  ComentarioTiquet
+  ComentarioTiquet,
+  LoginRegistro
 };

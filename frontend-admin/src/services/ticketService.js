@@ -1,8 +1,6 @@
 import api from './api';
 
-// Servicio para gestionar las operaciones relacionadas con tiquets (Admin)
 const ticketService = {
-  // Obtener todos los tiquets (solo admin)
   getTodosTiquets: async (filtros = {}) => {
     const params = new URLSearchParams();
     if (filtros.estado) params.append('estado', filtros.estado);
@@ -13,8 +11,7 @@ const ticketService = {
     const response = await api.get(`/tickets?${params.toString()}`);
     return response.data;
   },
-  
-  // Obtener un tiquet específico por ID
+
   getTiquetPorId: async (id) => {
     const response = await api.get(`/tickets/${id}`);
     return response.data;

@@ -69,6 +69,12 @@ const Sidebar = ({ onToggle, isCollapsed }) => {
               {!isCollapsed && <span className="sidebar-menu-text">Usuarios</span>}
             </NavLink>
           </li>
+          <li className="sidebar-menu-item">
+            <NavLink to="/login-registros" className={({isActive}) => `sidebar-menu-link ${isActive ? 'active' : ''}`}>
+              <i className="icon icon-loading sidebar-menu-icon"></i>
+              {!isCollapsed && <span className="sidebar-menu-text">Registros Login</span>}
+            </NavLink>
+          </li>
         </ul>
       </nav>
       

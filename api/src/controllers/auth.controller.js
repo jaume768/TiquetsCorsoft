@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const { Usuario } = require('../models');
+const { registrarLogin } = require('./loginRegistro.controller');
 
 // Función para generar token JWT
 const generarToken = (usuario) => {
@@ -47,6 +48,14 @@ const login = async (req, res) => {
 
     // Generar token JWT
     const token = generarToken(usuario);
+    
+    // Registrar el inicio de sesión
+    await registrarLogin(
+      usuario.id,
+      req.ip,
+      req.headers['user-agent'],
+      'normal'
+    );
 
     // Responder con token y datos del usuario (excepto password)
     const { password: _, ...usuarioData } = usuario.toJSON();
@@ -124,6 +133,7 @@ const register = async (req, res) => {
 const autoLogin = async (req, res) => {
   try {
     const { codprg, codcli, codusu } = req.query;
+    console.log('Parámetros de URL:', { codprg, codcli, codusu });
 
     // Validar que se enviaron los parámetros necesarios
     if (!codprg || !codcli || !codusu) {
@@ -135,6 +145,7 @@ const autoLogin = async (req, res) => {
 
     // Buscar usuario por los códigos proporcionados
     const usuario = await Usuario.findByUrlParams(codprg, codcli, codusu);
+    console.log('Usuario encontrado:', usuario);
 
     // Si no existe el usuario, crear uno con valores predeterminados
     if (!usuario) {
@@ -156,6 +167,14 @@ const autoLogin = async (req, res) => {
       const token = generarToken(nuevoUsuario);
       const { password: _, ...usuarioData } = nuevoUsuario.toJSON();
       
+      // Registrar el inicio de sesión
+      await registrarLogin(
+        nuevoUsuario.id,
+        req.ip,
+        req.headers['user-agent'],
+        'auto_nuevo'
+      );
+      
       return res.status(201).json({
         success: true,
         message: 'Usuario creado y autenticado automáticamente',
@@ -167,6 +186,14 @@ const autoLogin = async (req, res) => {
     // Si el usuario existe, generar token y devolver datos
     const token = generarToken(usuario);
     const { password: _, ...usuarioData } = usuario.toJSON();
+    
+    // Registrar el inicio de sesión
+    await registrarLogin(
+      usuario.id,
+      req.ip,
+      req.headers['user-agent'],
+      'auto'
+    );
     
     return res.status(200).json({
       success: true,
