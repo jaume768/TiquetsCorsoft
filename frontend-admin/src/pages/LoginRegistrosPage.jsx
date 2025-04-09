@@ -160,18 +160,6 @@ const LoginRegistrosPage = () => {
               </div>
             </div>
             
-            <div className="estadistica-card metodos">
-              <h3 className="card-title">Métodos de Inicio de Sesión</h3>
-              <div className="metodos-list">
-                {estadisticas.loginsPorMetodo?.map((item, index) => (
-                  <div key={index} className="metodo-item">
-                    <span className="metodo-name">{getMetodoLoginLabel(item.metodo_login || 'Desconocido')}</span>
-                    <span className="metodo-count">{item.total}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-            
             <div className="estadistica-card usuarios">
               <h3 className="card-title">Top Usuarios</h3>
               <div className="usuarios-list">
@@ -279,7 +267,6 @@ const LoginRegistrosPage = () => {
                     <th>ID</th>
                     <th>Usuario</th>
                     <th>Fecha y Hora</th>
-                    <th>Método</th>
                     <th>IP</th>
                     <th>User Agent</th>
                   </tr>
@@ -294,11 +281,6 @@ const LoginRegistrosPage = () => {
                         </Link>
                       </td>
                       <td>{formatearFecha(registro.fecha_login)}</td>
-                      <td>
-                        <span className={`metodo-badge metodo-${registro.metodo_login}`}>
-                          {getMetodoLoginLabel(registro.metodo_login)}
-                        </span>
-                      </td>
                       <td>{registro.ip_address || 'N/A'}</td>
                       <td className="user-agent-cell">
                         <div className="user-agent-content">

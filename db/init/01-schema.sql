@@ -6,11 +6,11 @@ USE tiquets_db;
 CREATE TABLE IF NOT EXISTS usuarios (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(100) NOT NULL,
-    email VARCHAR(100) NOT NULL UNIQUE,
+    email VARCHAR(100) NOT NULL,
     password VARCHAR(255) NOT NULL,
-    codprg VARCHAR(10) DEFAULT NULL,
     codcli VARCHAR(10) DEFAULT NULL,
-    codusu VARCHAR(10) DEFAULT NULL,
+    nif VARCHAR(15) DEFAULT NULL,
+    direccion VARCHAR(255) DEFAULT NULL,
     rol ENUM('usuario', 'admin') NOT NULL DEFAULT 'usuario',
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     fecha_actualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
@@ -51,6 +51,17 @@ CREATE TABLE IF NOT EXISTS historial_tiquets (
     comentario TEXT DEFAULT NULL,
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (tiquet_id) REFERENCES tiquets(id) ON DELETE CASCADE,
+    FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
+);
+
+-- Tabla de registros de login
+CREATE TABLE IF NOT EXISTS login_registros (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    usuario_id INT NOT NULL,
+    fecha_login TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    ip_address VARCHAR(50) DEFAULT NULL,
+    user_agent TEXT DEFAULT NULL,
+    metodo_login VARCHAR(50) DEFAULT NULL,
     FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
 );
 

@@ -35,7 +35,7 @@ const getLoginRegistros = async (req, res) => {
         {
           model: Usuario,
           as: 'usuario',
-          attributes: ['id', 'nombre', 'email', 'rol', 'codprg', 'codcli', 'codusu']
+          attributes: ['id', 'nombre', 'email', 'rol', 'codcli', 'nif', 'direccion']
         }
       ],
       order: [['fecha_login', 'DESC']],

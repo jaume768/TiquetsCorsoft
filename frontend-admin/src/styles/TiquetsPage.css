@@ -25,7 +25,16 @@
 }
 
 .filtros-form {
-  width: 100%;
+  width: 96%;
+}
+
+@media (max-width: 768px) {
+  .filtros-form {
+    width: 84%;
+  }
+  .filtro-select{
+    width: 13em;
+  }
 }
 
 .filtros-grid {

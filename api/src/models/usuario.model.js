@@ -15,7 +15,6 @@ const Usuario = sequelize.define('Usuario', {
   email: {
     type: DataTypes.STRING(100),
     allowNull: false,
-    unique: true,
     validate: {
       isEmail: true
     }
@@ -24,16 +23,16 @@ const Usuario = sequelize.define('Usuario', {
     type: DataTypes.STRING(255),
     allowNull: false
   },
-  codprg: {
-    type: DataTypes.STRING(10),
-    allowNull: true
-  },
   codcli: {
     type: DataTypes.STRING(10),
     allowNull: true
   },
-  codusu: {
-    type: DataTypes.STRING(10),
+  nif: {
+    type: DataTypes.STRING(15),
+    allowNull: true
+  },
+  direccion: {
+    type: DataTypes.STRING(255),
     allowNull: true
   },
   rol: {
@@ -71,10 +70,10 @@ Usuario.prototype.validarPassword = async function(password) {
   return bcrypt.compare(password, this.password);
 };
 
-// Método para encontrar usuario por parámetros de URL
-Usuario.findByUrlParams = async function(codprg, codcli, codusu) {
+// Método para encontrar usuario por código de cliente
+Usuario.findByClientCode = async function(codcli) {
   return await Usuario.findOne({
-    where: { codprg, codcli, codusu }
+    where: { codcli }
   });
 };
 

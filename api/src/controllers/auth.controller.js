@@ -129,36 +129,34 @@ const register = async (req, res) => {
   }
 };
 
-// Controlador para login automático por parámetros URL
+// Controlador para login automático por código de cliente
 const autoLogin = async (req, res) => {
   try {
-    const { codprg, codcli, codusu } = req.query;
+    const { codcli } = req.query;
 
-    // Validar que se enviaron los parámetros necesarios
-    if (!codprg || !codcli || !codusu) {
+    // Validar que se envió el parámetro necesario
+    if (!codcli) {
       return res.status(400).json({
         success: false,
-        message: 'Los parámetros codprg, codcli y codusu son requeridos'
+        message: 'El parámetro codcli es requerido'
       });
     }
 
-    // Buscar usuario por los códigos proporcionados
-    const usuario = await Usuario.findByUrlParams(codprg, codcli, codusu);
+    // Buscar usuario por el código de cliente proporcionado
+    const usuario = await Usuario.findByClientCode(codcli);
 
     // Si no existe el usuario, crear uno con valores predeterminados
     if (!usuario) {
-      // Generar un email único basado en los códigos
-      const email = `${codusu}@${codcli}.${codprg}.auto`;
-      // Generar una contraseña aleatoria (en la práctica, deberías enviar un email o notificar al usuario)
+      // Generar un email único basado en el código de cliente
+      const email = `cliente-${codcli}@corsoft.auto`;
+      // Generar una contraseña aleatoria
       const password = Math.random().toString(36).substring(2, 10);
       
       const nuevoUsuario = await Usuario.create({
-        nombre: `Usuario ${codusu}`,
+        nombre: `Cliente ${codcli}`,
         email,
         password,
-        codprg: codprg,
         codcli: codcli,
-        codusu: codusu,
         rol: 'usuario'
       });
 

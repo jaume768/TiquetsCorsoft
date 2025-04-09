@@ -4,7 +4,7 @@ Sistema de gestión de tiquets para usuarios y administradores. Esta aplicación
 
 ## Características Principales
 
-- **Autenticación**: Sistema de login tradicional y login automático mediante parámetros de URL
+- **Autenticación**: Sistema de login tradicional y login automático mediante código de cliente
 - **Creación de Tiquets**: Los usuarios pueden crear tiquets con título, descripción y opcionalmente adjuntar una imagen
 - **Notificaciones por Email**: Envío automático de correos al administrador cuando se crea un nuevo tiquet
 - **Dashboard de Usuario**: Interfaz para que los usuarios vean y gestionen sus propios tiquets
@@ -78,10 +78,12 @@ npm start
 
 ## Uso del login automático
 
-Para utilizar el login automático, acceda a la siguiente URL:
+Para utilizar el login automático, acceda a la siguiente URL con el código de cliente:
 ```
-http://localhost/?codprg=050&codcli=0700&codusu=50
+http://localhost/?codcli=0700
 ```
+
+El sistema creará automáticamente un usuario asociado a este código de cliente si no existe.
 
 ## Estructura del proyecto
 ```
