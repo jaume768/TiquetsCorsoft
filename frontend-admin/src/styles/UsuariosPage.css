@@ -39,16 +39,23 @@
   background-color: #0b5ed7;
 }
 
-.usuarios-search-container {
+.usuarios-filters-container {
   background-color: white;
   border-radius: 0.5rem;
   padding: 1.25rem;
   margin-bottom: 1.5rem;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
 }
 
 .search-input-container {
   position: relative;
+  flex: 1;
+  min-width: 250px;
   max-width: 600px;
   margin: 0 auto;
 }
@@ -107,6 +114,20 @@
   margin-bottom: 1.5rem;
 }
 
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.error-message {
+  color: #dc3545;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
+.form-control.is-invalid {
+  border-color: #dc3545;
+}
+
 .usuarios-content {
   background-color: white;
   border-radius: 0.5rem;
@@ -119,8 +140,41 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 300px;
-  gap: 1rem;
+  padding: 3rem 0;
+  color: #6c757d;
+}
+
+.spinner {
+  margin: 0 auto;
+  width: 70px;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.spinner > div {
+  width: 12px;
+  height: 12px;
+  background-color: #0d6efd;
+  border-radius: 100%;
+  display: inline-block;
+  animation: sk-bouncedelay 1.4s infinite ease-in-out both;
+  margin: 0 3px;
+}
+
+.spinner .bounce1 {
+  animation-delay: -0.32s;
+}
+
+.spinner .bounce2 {
+  animation-delay: -0.16s;
+}
+
+@keyframes sk-bouncedelay {
+  0%, 80%, 100% { 
+    transform: scale(0);
+  } 40% { 
+    transform: scale(1.0);
+  }
 }
 
 .usuarios-loading p {
@@ -285,11 +339,113 @@
 }
 
 .btn-eliminar-usuario:disabled {
+  background-color: #e9ecef;
   color: #adb5bd;
   cursor: not-allowed;
 }
 
-/* Modal styles */
+.filter-controls {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.filter-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.filter-group label {
+  font-weight: 500;
+  color: #495057;
+  margin-bottom: 0;
+}
+
+.filter-select {
+  padding: 0.375rem 0.75rem;
+  border: 1px solid #ced4da;
+  border-radius: 0.25rem;
+  background-color: white;
+  color: #495057;
+  min-width: 100px;
+}
+
+.pagination-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.pagination-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid #dee2e6;
+  border-radius: 0.25rem;
+  background-color: white;
+  color: #0d6efd;
+  cursor: pointer;
+  transition: all 0.15s ease-in-out;
+}
+
+.pagination-btn:hover:not(:disabled) {
+  background-color: #e9ecef;
+  border-color: #dee2e6;
+}
+
+.pagination-btn:disabled {
+  color: #adb5bd;
+  background-color: #f8f9fa;
+  cursor: not-allowed;
+}
+
+.pagination-info {
+  padding: 0.375rem 0.75rem;
+  color: #495057;
+  font-weight: 500;
+}
+
+.usuarios-total {
+  text-align: right;
+  margin-top: 1rem;
+  color: #6c757d;
+  font-size: 0.875rem;
+}
+
+.confirm-modal {
+  max-width: 400px;
+}
+
+.confirm-modal .modal-body {
+  text-align: center;
+}
+
+.btn-eliminar {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 0.375rem;
+  padding: 0.5rem 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.15s ease-in-out;
+}
+
+.btn-eliminar:hover {
+  background-color: #c82333;
+}
+
+.text-danger {
+  color: #dc3545;
+}
+
 .modal-overlay {
   position: fixed;
   top: 0;

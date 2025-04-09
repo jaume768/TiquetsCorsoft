@@ -1,66 +1,72 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { useAuth } from '../context/AuthContext';
+import userService from '../services/userService';
+import { showSuccess, showError, showWarning } from '../components/Notification';
 import '../styles/UsuariosPage.css';
-
-// Este servicio debería ser implementado para gestionar usuarios
-const userService = {
-  getUsuarios: async () => {
-    // Simulación de datos para mostrar la estructura
-    return {
-      success: true,
-      data: [
-        { 
-          id: 1, 
-          nombre: 'Administrador', 
-          email: 'admin@example.com', 
-          rol: 'admin',
-          codigoPrograma: null,
-          codigoCliente: null,
-          codigoUsuario: null,
-          fecha_creacion: '2025-01-01T00:00:00.000Z'
-        },
-        { 
-          id: 2, 
-          nombre: 'Juan Pérez', 
-          email: 'juan@example.com', 
-          rol: 'usuario',
-          codigoPrograma: 'PROG001',
-          codigoCliente: 'CLI123',
-          codigoUsuario: 'USR456',
-          fecha_creacion: '2025-01-15T00:00:00.000Z'
-        },
-        { 
-          id: 3, 
-          nombre: 'María López', 
-          email: 'maria@example.com', 
-          rol: 'usuario',
-          codigoPrograma: 'PROG002',
-          codigoCliente: 'CLI456',
-          codigoUsuario: 'USR789',
-          fecha_creacion: '2025-02-01T00:00:00.000Z'
-        }
-      ]
-    };
-  }
-};
+import '../styles/components/icons.css';
 
 const UsuariosPage = () => {
+  const { usuario } = useAuth();
+  
+  // Estados para la gestión de usuarios
   const [usuarios, setUsuarios] = useState([]);
+  const [totalUsuarios, setTotalUsuarios] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [busqueda, setBusqueda] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
   const [usuarioSeleccionado, setUsuarioSeleccionado] = useState(null);
+  const [confirmDeleteModal, setConfirmDeleteModal] = useState(false);
+  const [usuarioAEliminar, setUsuarioAEliminar] = useState(null);
+  
+  // Estados para la paginación
+  const [paginaActual, setPaginaActual] = useState(1);
+  const [limite, setLimite] = useState(10);
+  const [filtroRol, setFiltroRol] = useState('');
+  
+  // Formulario para crear/editar usuario
+  const formRef = useRef(null);
+  const [formData, setFormData] = useState({
+    nombre: '',
+    email: '',
+    password: '',
+    rol: 'usuario',
+    codcli: '',
+    nif: '',
+    direccion: ''
+  });
+  const [formErrors, setFormErrors] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Cargar usuarios al montar el componente o cuando cambian los filtros
   useEffect(() => {
-    cargarUsuarios();
-  }, []);
+    const timer = setTimeout(() => {
+      cargarUsuarios();
+    }, 300); // Debounce para la búsqueda
+    
+    return () => clearTimeout(timer);
+  }, [paginaActual, limite, busqueda, filtroRol]);
 
+  // Función para cargar usuarios con paginación y filtros
   const cargarUsuarios = async () => {
     try {
       setLoading(true);
-      const response = await userService.getUsuarios();
-      setUsuarios(response.data);
-      setError(null);
+      const filtros = {
+        pagina: paginaActual,
+        limite,
+        busqueda,
+        rol: filtroRol
+      };
+      
+      const response = await userService.getUsuarios(filtros);
+      
+      if (response.success) {
+        setUsuarios(response.data);
+        setTotalUsuarios(response.total || response.data.length);
+        setError(null);
+      } else {
+        setError('Error al cargar los usuarios: ' + (response.message || 'Error desconocido'));
+      }
     } catch (error) {
       console.error('Error al cargar usuarios:', error);
       setError('No se pudieron cargar los usuarios. Por favor, intente nuevamente más tarde.');
@@ -69,26 +75,169 @@ const UsuariosPage = () => {
     }
   };
 
-  const handleBusquedaChange = (e) => {
-    setBusqueda(e.target.value);
+  // Manejar cambios en el formulario
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
   };
 
+  // Manejar cambio en la búsqueda
+  const handleBusquedaChange = (e) => {
+    setBusqueda(e.target.value);
+    setPaginaActual(1); // Resetear a la primera página cuando se busca
+  };
+
+  // Abrir modal para crear/editar usuario
   const abrirModal = (usuario = null) => {
+    if (usuario) {
+      setFormData({
+        nombre: usuario.nombre || '',
+        email: usuario.email || '',
+        password: '', // No mostrar contraseña existente
+        rol: usuario.rol || 'usuario',
+        codcli: usuario.codcli || '',
+        nif: usuario.nif || '',
+        direccion: usuario.direccion || ''
+      });
+    } else {
+      // Resetear formulario para nuevo usuario
+      setFormData({
+        nombre: '',
+        email: '',
+        password: '',
+        rol: 'usuario',
+        codcli: '',
+        nif: '',
+        direccion: ''
+      });
+    }
+    
+    setFormErrors({});
     setUsuarioSeleccionado(usuario);
     setModalVisible(true);
   };
 
+  // Cerrar modal
   const cerrarModal = () => {
     setModalVisible(false);
     setUsuarioSeleccionado(null);
+    setFormErrors({});
   };
 
-  // Filtrar usuarios basados en la búsqueda
-  const usuariosFiltrados = usuarios.filter(usuario => 
-    usuario.nombre.toLowerCase().includes(busqueda.toLowerCase()) ||
-    usuario.email.toLowerCase().includes(busqueda.toLowerCase()) ||
-    (usuario.codigoUsuario && usuario.codigoUsuario.toLowerCase().includes(busqueda.toLowerCase()))
-  );
+  // Validar formulario
+  const validarFormulario = () => {
+    const errores = {};
+    
+    if (!formData.nombre.trim()) {
+      errores.nombre = 'El nombre es obligatorio';
+    }
+    
+    if (!formData.email.trim()) {
+      errores.email = 'El email es obligatorio';
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      errores.email = 'El formato del email no es válido';
+    }
+    
+    if (!usuarioSeleccionado && !formData.password.trim()) {
+      errores.password = 'La contraseña es obligatoria para nuevos usuarios';
+    } else if (!usuarioSeleccionado && formData.password.length < 6) {
+      errores.password = 'La contraseña debe tener al menos 6 caracteres';
+    }
+    
+    setFormErrors(errores);
+    return Object.keys(errores).length === 0;
+  };
+
+  // Guardar usuario (crear o actualizar)
+  const guardarUsuario = async () => {
+    if (!validarFormulario()) {
+      return;
+    }
+    
+    setIsSubmitting(true);
+    
+    try {
+      let response;
+      
+      if (usuarioSeleccionado) {
+        // Actualizar usuario existente
+        const datosActualizados = { ...formData };
+        // Solo enviar password si se ha proporcionado uno nuevo
+        if (!datosActualizados.password) {
+          delete datosActualizados.password;
+        }
+        
+        response = await userService.actualizarUsuario(usuarioSeleccionado.id, datosActualizados);
+        
+        if (response.success) {
+          showSuccess('Usuario actualizado correctamente');
+          cerrarModal();
+          cargarUsuarios();
+        } else {
+          showError(response.message || 'Error al actualizar usuario');
+        }
+      } else {
+        // Crear nuevo usuario
+        response = await userService.crearUsuario(formData);
+        
+        if (response.success) {
+          showSuccess('Usuario creado correctamente');
+          cerrarModal();
+          cargarUsuarios();
+        } else {
+          showError(response.message || 'Error al crear usuario');
+        }
+      }
+    } catch (error) {
+      console.error('Error al guardar usuario:', error);
+      showError('Error al guardar usuario: ' + (error.message || 'Error desconocido'));
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  // Confirmar eliminación de usuario
+  const confirmarEliminarUsuario = (usuarioAEliminar) => {
+    if (usuarioAEliminar.id === usuario.id) {
+      showError('No puedes eliminar tu propia cuenta');
+      return;
+    }
+    
+    setUsuarioAEliminar(usuarioAEliminar);
+    setConfirmDeleteModal(true);
+  };
+
+  // Eliminar usuario
+  const eliminarUsuario = async () => {
+    if (!usuarioAEliminar) return;
+    
+    try {
+      const response = await userService.eliminarUsuario(usuarioAEliminar.id);
+      
+      if (response.success) {
+        showSuccess('Usuario eliminado correctamente');
+        setConfirmDeleteModal(false);
+        setUsuarioAEliminar(null);
+        cargarUsuarios();
+      } else {
+        showError(response.message || 'Error al eliminar usuario');
+      }
+    } catch (error) {
+      console.error('Error al eliminar usuario:', error);
+      showError('Error al eliminar usuario: ' + (error.message || 'Error desconocido'));
+    }
+  };
+
+  // Cambiar página
+  const cambiarPagina = (pagina) => {
+    setPaginaActual(pagina);
+  };
+
+  // Calcular total de páginas
+  const totalPaginas = Math.ceil(totalUsuarios / limite);
 
   return (
     <div className="usuarios-page-container">
@@ -98,13 +247,13 @@ const UsuariosPage = () => {
           className="btn-nuevo-usuario"
           onClick={() => abrirModal()}
         >
-          <i className="bi bi-person-plus-fill"></i> Nuevo Usuario
+          <i className="icon icon-user-plus"></i> Nuevo Usuario
         </button>
       </header>
       
-      <div className="usuarios-search-container">
+      <div className="usuarios-filters-container">
         <div className="search-input-container">
-          <i className="bi bi-search search-icon"></i>
+          <i className="icon icon-search search-icon"></i>
           <input
             type="text"
             className="search-input"
@@ -118,9 +267,46 @@ const UsuariosPage = () => {
               onClick={() => setBusqueda('')}
               title="Limpiar búsqueda"
             >
-              <i className="bi bi-x"></i>
+              <span>×</span>
             </button>
           )}
+        </div>
+        
+        <div className="filter-controls">
+          <div className="filter-group">
+            <label htmlFor="filtroRol">Rol:</label>
+            <select 
+              id="filtroRol" 
+              value={filtroRol} 
+              onChange={(e) => {
+                setFiltroRol(e.target.value);
+                setPaginaActual(1);
+              }}
+              className="filter-select"
+            >
+              <option value="">Todos</option>
+              <option value="admin">Administrador</option>
+              <option value="usuario">Usuario</option>
+            </select>
+          </div>
+          
+          <div className="filter-group">
+            <label htmlFor="limite">Mostrar:</label>
+            <select 
+              id="limite" 
+              value={limite} 
+              onChange={(e) => {
+                setLimite(Number(e.target.value));
+                setPaginaActual(1);
+              }}
+              className="filter-select"
+            >
+              <option value="5">5</option>
+              <option value="10">10</option>
+              <option value="25">25</option>
+              <option value="50">50</option>
+            </select>
+          </div>
         </div>
       </div>
       
@@ -133,14 +319,16 @@ const UsuariosPage = () => {
       <div className="usuarios-content">
         {loading ? (
           <div className="usuarios-loading">
-            <div className="spinner-border text-primary" role="status">
-              <span className="visually-hidden">Cargando...</span>
+            <div className="spinner">
+              <div className="bounce1"></div>
+              <div className="bounce2"></div>
+              <div className="bounce3"></div>
             </div>
             <p>Cargando usuarios...</p>
           </div>
-        ) : usuariosFiltrados.length === 0 ? (
+        ) : usuarios.length === 0 ? (
           <div className="no-usuarios">
-            <i className="bi bi-people"></i>
+            <i className="icon icon-users"></i>
             <p>No se encontraron usuarios{busqueda ? ' que coincidan con la búsqueda' : ''}</p>
             {busqueda && (
               <button 
@@ -160,54 +348,96 @@ const UsuariosPage = () => {
                   <th>Nombre</th>
                   <th>Email</th>
                   <th>Rol</th>
-                  <th>Código Usuario</th>
+                  <th>Código Cliente</th>
+                  <th>NIF</th>
+                  <th>Dirección</th>
                   <th>Fecha Registro</th>
                   <th>Acciones</th>
                 </tr>
               </thead>
               <tbody>
-                {usuariosFiltrados.map(usuario => (
-                  <tr key={usuario.id}>
-                    <td className="usuario-id">{usuario.id}</td>
-                    <td className="usuario-nombre">{usuario.nombre}</td>
-                    <td className="usuario-email">{usuario.email}</td>
+                {usuarios.map(usuarioItem => (
+                  <tr key={usuarioItem.id}>
+                    <td className="usuario-id">{usuarioItem.id}</td>
+                    <td className="usuario-nombre">{usuarioItem.nombre}</td>
+                    <td className="usuario-email">{usuarioItem.email}</td>
                     <td className="usuario-rol">
-                      <span className={`rol-badge ${usuario.rol === 'admin' ? 'rol-admin' : 'rol-usuario'}`}>
-                        {usuario.rol === 'admin' ? 'Administrador' : 'Usuario'}
+                      <span className={`rol-badge ${usuarioItem.rol === 'admin' ? 'rol-admin' : 'rol-usuario'}`}>
+                        {usuarioItem.rol === 'admin' ? 'Administrador' : 'Usuario'}
                       </span>
                     </td>
-                    <td className="usuario-codigo">{usuario.codigoUsuario || '-'}</td>
+                    <td className="usuario-codigo">{usuarioItem.codcli || '-'}</td>
+                    <td className="usuario-nif">{usuarioItem.nif || '-'}</td>
+                    <td className="usuario-direccion">{usuarioItem.direccion || '-'}</td>
                     <td className="usuario-fecha">
-                      {new Date(usuario.fecha_creacion).toLocaleDateString('es-ES')}
+                      {usuarioItem.fecha_creacion ? new Date(usuarioItem.fecha_creacion).toLocaleDateString('es-ES') : '-'}
                     </td>
                     <td className="usuario-acciones">
                       <button 
                         className="btn-editar-usuario"
-                        onClick={() => abrirModal(usuario)}
+                        onClick={() => abrirModal(usuarioItem)}
                         title="Editar usuario"
                       >
-                        <i className="bi bi-pencil-fill"></i>
-                      </button>
-                      <button 
-                        className="btn-ver-usuario"
-                        onClick={() => console.log('Ver detalles de', usuario.nombre)}
-                        title="Ver detalles"
-                      >
-                        <i className="bi bi-eye-fill"></i>
+                        <i className="icon icon-pencil"></i>
                       </button>
                       <button 
                         className="btn-eliminar-usuario"
-                        onClick={() => console.log('Eliminar', usuario.nombre)}
+                        onClick={() => confirmarEliminarUsuario(usuarioItem)}
                         title="Eliminar usuario"
-                        disabled={usuario.rol === 'admin'}
+                        disabled={usuarioItem.rol === 'admin' || usuarioItem.id === usuario.id}
                       >
-                        <i className="bi bi-trash-fill"></i>
+                        <i className="icon icon-trash"></i>
                       </button>
                     </td>
                   </tr>
                 ))}
               </tbody>
             </table>
+            
+            {/* Paginación */}
+            {totalPaginas > 1 && (
+              <div className="pagination-container">
+                <button 
+                  className="pagination-btn"
+                  onClick={() => cambiarPagina(1)}
+                  disabled={paginaActual === 1}
+                >
+                  <i className="bi bi-chevron-double-left"></i>
+                </button>
+                
+                <button 
+                  className="pagination-btn"
+                  onClick={() => cambiarPagina(paginaActual - 1)}
+                  disabled={paginaActual === 1}
+                >
+                  <i className="icon icon-chevron-left"></i>
+                </button>
+                
+                <div className="pagination-info">
+                  Página {paginaActual} de {totalPaginas}
+                </div>
+                
+                <button 
+                  className="pagination-btn"
+                  onClick={() => cambiarPagina(paginaActual + 1)}
+                  disabled={paginaActual === totalPaginas}
+                >
+                  <i className="icon icon-chevron-right"></i>
+                </button>
+                
+                <button 
+                  className="pagination-btn"
+                  onClick={() => cambiarPagina(totalPaginas)}
+                  disabled={paginaActual === totalPaginas}
+                >
+                  <i className="bi bi-chevron-double-right"></i>
+                </button>
+              </div>
+            )}
+            
+            <div className="usuarios-total">
+              Total: {totalUsuarios} usuario{totalUsuarios !== 1 ? 's' : ''}
+            </div>
           </div>
         )}
       </div>
@@ -223,95 +453,175 @@ const UsuariosPage = () => {
               <button 
                 className="modal-close-btn"
                 onClick={cerrarModal}
+                disabled={isSubmitting}
               >
                 <i className="bi bi-x-lg"></i>
               </button>
             </div>
             <div className="modal-body">
-              <form className="usuario-form">
+              <form className="usuario-form" ref={formRef} onSubmit={(e) => e.preventDefault()}>
                 <div className="form-group">
-                  <label htmlFor="nombre">Nombre</label>
+                  <label htmlFor="nombre">Nombre *</label>
                   <input 
                     type="text" 
                     id="nombre" 
-                    className="form-control"
-                    defaultValue={usuarioSeleccionado?.nombre || ''}
+                    name="nombre"
+                    className={`form-control ${formErrors.nombre ? 'is-invalid' : ''}`}
+                    value={formData.nombre}
+                    onChange={handleInputChange}
+                    disabled={isSubmitting}
                   />
+                  {formErrors.nombre && <div className="error-message">{formErrors.nombre}</div>}
                 </div>
+                
                 <div className="form-group">
-                  <label htmlFor="email">Email</label>
+                  <label htmlFor="email">Email *</label>
                   <input 
                     type="email" 
                     id="email" 
-                    className="form-control"
-                    defaultValue={usuarioSeleccionado?.email || ''}
+                    name="email"
+                    className={`form-control ${formErrors.email ? 'is-invalid' : ''}`}
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    disabled={isSubmitting}
                   />
+                  {formErrors.email && <div className="error-message">{formErrors.email}</div>}
                 </div>
+                
                 <div className="form-group">
-                  <label htmlFor="rol">Rol</label>
+                  <label htmlFor="rol">Rol *</label>
                   <select 
                     id="rol" 
+                    name="rol"
                     className="form-control"
-                    defaultValue={usuarioSeleccionado?.rol || 'usuario'}
+                    value={formData.rol}
+                    onChange={handleInputChange}
+                    disabled={isSubmitting}
                   >
                     <option value="usuario">Usuario</option>
                     <option value="admin">Administrador</option>
                   </select>
                 </div>
+                
                 <div className="form-group">
-                  <label htmlFor="codigoPrograma">Código Programa</label>
+                  <label htmlFor="codcli">Código Cliente</label>
                   <input 
                     type="text" 
-                    id="codigoPrograma" 
+                    id="codcli" 
+                    name="codcli"
                     className="form-control"
-                    defaultValue={usuarioSeleccionado?.codigoPrograma || ''}
+                    value={formData.codcli}
+                    onChange={handleInputChange}
+                    disabled={isSubmitting}
                   />
                 </div>
+                
                 <div className="form-group">
-                  <label htmlFor="codigoCliente">Código Cliente</label>
+                  <label htmlFor="nif">NIF</label>
                   <input 
                     type="text" 
-                    id="codigoCliente" 
+                    id="nif" 
+                    name="nif"
                     className="form-control"
-                    defaultValue={usuarioSeleccionado?.codigoCliente || ''}
+                    value={formData.nif}
+                    onChange={handleInputChange}
+                    disabled={isSubmitting}
                   />
                 </div>
+                
                 <div className="form-group">
-                  <label htmlFor="codigoUsuario">Código Usuario</label>
+                  <label htmlFor="direccion">Dirección</label>
                   <input 
                     type="text" 
-                    id="codigoUsuario" 
+                    id="direccion" 
+                    name="direccion"
                     className="form-control"
-                    defaultValue={usuarioSeleccionado?.codigoUsuario || ''}
+                    value={formData.direccion}
+                    onChange={handleInputChange}
+                    disabled={isSubmitting}
                   />
                 </div>
-                {!usuarioSeleccionado && (
-                  <div className="form-group">
-                    <label htmlFor="password">Contraseña</label>
-                    <input 
-                      type="password" 
-                      id="password" 
-                      className="form-control"
-                    />
-                  </div>
-                )}
+                
+                {/* Mostrar campo de contraseña solo para nuevos usuarios o si se quiere cambiar */}
+                <div className="form-group">
+                  <label htmlFor="password">
+                    {usuarioSeleccionado ? 'Contraseña (dejar en blanco para mantener la actual)' : 'Contraseña *'}
+                  </label>
+                  <input 
+                    type="password" 
+                    id="password" 
+                    name="password"
+                    className={`form-control ${formErrors.password ? 'is-invalid' : ''}`}
+                    value={formData.password}
+                    onChange={handleInputChange}
+                    disabled={isSubmitting}
+                  />
+                  {formErrors.password && <div className="error-message">{formErrors.password}</div>}
+                </div>
               </form>
             </div>
             <div className="modal-footer">
               <button 
                 className="btn-cancelar"
                 onClick={cerrarModal}
+                disabled={isSubmitting}
               >
                 Cancelar
               </button>
               <button 
                 className="btn-guardar"
+                onClick={guardarUsuario}
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? (
+                  <>
+                    <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                    <span className="ms-2">{usuarioSeleccionado ? 'Actualizando...' : 'Creando...'}</span>
+                  </>
+                ) : (
+                  usuarioSeleccionado ? 'Actualizar' : 'Crear'
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      
+      {/* Modal de confirmación para eliminar usuario */}
+      {confirmDeleteModal && (
+        <div className="modal-overlay">
+          <div className="modal-container confirm-modal">
+            <div className="modal-header">
+              <h2 className="modal-title">Confirmar Eliminación</h2>
+              <button 
+                className="modal-close-btn"
                 onClick={() => {
-                  console.log('Guardar usuario');
-                  cerrarModal();
+                  setConfirmDeleteModal(false);
+                  setUsuarioAEliminar(null);
                 }}
               >
-                {usuarioSeleccionado ? 'Actualizar' : 'Crear'}
+                <i className="bi bi-x-lg"></i>
+              </button>
+            </div>
+            <div className="modal-body">
+              <p>¿Está seguro de que desea eliminar al usuario <strong>{usuarioAEliminar?.nombre}</strong>?</p>
+              <p className="text-danger">Esta acción no se puede deshacer.</p>
+            </div>
+            <div className="modal-footer">
+              <button 
+                className="btn-cancelar"
+                onClick={() => {
+                  setConfirmDeleteModal(false);
+                  setUsuarioAEliminar(null);
+                }}
+              >
+                Cancelar
+              </button>
+              <button 
+                className="btn-eliminar"
+                onClick={eliminarUsuario}
+              >
+                Eliminar
               </button>
             </div>
           </div>

@@ -9,6 +9,7 @@ router.put('/perfil', verificarToken, userController.actualizarPerfil);
 
 // Rutas solo para admin
 router.get('/', [verificarToken, esAdmin], userController.getTodosUsuarios);
+router.post('/', [verificarToken, esAdmin], userController.createUsuario);
 router.get('/:id', [verificarToken, esAdmin], userController.getUsuarioPorId);
 router.put('/:id', [verificarToken, esAdmin], userController.actualizarUsuario);
 router.delete('/:id', [verificarToken, esAdmin], userController.eliminarUsuario);

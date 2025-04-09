@@ -51,6 +51,22 @@
   content: "\1F50D"; /* Lupa */
 }
 
+.icon-pencil::before {
+  content: "\270F"; /* Lápiz */
+}
+
+.icon-trash::before {
+  content: "\1F5D1"; /* Papelera */
+}
+
+.icon-plus::before {
+  content: "\2795"; /* Signo más */
+}
+
+.icon-user-plus::before {
+  content: "\1F465\2795"; /* Usuarios + signo más */
+}
+
 .icon-person::before {
   content: "\1F464"; /* Silueta de persona */
 }

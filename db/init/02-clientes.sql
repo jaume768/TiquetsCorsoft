@@ -111,7 +111,7 @@ INSERT INTO usuarios (codcli, nombre, nif, direccion, email, password, rol) VALU
 ('669', 'JOAN LLANERAS MESTRE', '41524499T', 'C/ AUSSIAS MARCH, 12 07570 ARTA (MALLORCA)', 'sanimetalarta@gmail.com', '$2a$10$Yiw5CbgxC.yGLvcZYUdq0.CgeaohuvOM9lV.PO0/kk19z9aFKWVGC', 'usuario'),
 ('670', 'MOTOS FORMENTOR, S.L.', 'B07229966', 'PSO.SARALEGUI, 106 07470 PORT DE POLLENØA', 'gestio@formentor.rent', '$2a$10$Yiw5CbgxC.yGLvcZYUdq0.CgeaohuvOM9lV.PO0/kk19z9aFKWVGC', 'usuario'),
 ('674', 'PROTUR CARS, S.L.', 'B57247595', 'AVDA. BELLAVISTA, 2 07560 CALA MILLOR', 'admon@proturcars.com', '$2a$10$Yiw5CbgxC.yGLvcZYUdq0.CgeaohuvOM9lV.PO0/kk19z9aFKWVGC', 'usuario'),
-'675', 'VIÚAS RENT A CAR, S.L.', 'B57060071', 'C/ MESTRAL, 1 07687 S''ILLOT', 'joanagelabertv@hotmail.com', '$2a$10$Yiw5CbgxC.yGLvcZYUdq0.CgeaohuvOM9lV.PO0/kk19z9aFKWVGC', 'usuario'),
+('675', 'VIÚAS RENT A CAR, S.L.', 'B57060071', 'C/ MESTRAL, 1 07687 S''ILLOT', 'joanagelabertv@hotmail.com', '$2a$10$Yiw5CbgxC.yGLvcZYUdq0.CgeaohuvOM9lV.PO0/kk19z9aFKWVGC', 'usuario'),
 ('676', 'XOROI CARS S.L.', 'B07421043', 'C/ SANT MARC, 22 07679 COLONIA DE SANT PERE', 'xoroi@infoarta.com', '$2a$10$Yiw5CbgxC.yGLvcZYUdq0.CgeaohuvOM9lV.PO0/kk19z9aFKWVGC', 'usuario'),
 ('677', 'ROSSLIND SANTA PONØA, S.L.', 'B07154636', 'C/PUIG DEL TEIX, 6 LOCAL 1 07180 SANTA PONSA', 'info@rosslind.com', '$2a$10$Yiw5CbgxC.yGLvcZYUdq0.CgeaohuvOM9lV.PO0/kk19z9aFKWVGC', 'usuario'),
 ('682', 'SEBASTIA MOREY RIERA', '37342218Q', 'ECONOM PERE BONNIN, 27 07500 MANACOR', 'samallorquina.tia@gmail.com', '$2a$10$Yiw5CbgxC.yGLvcZYUdq0.CgeaohuvOM9lV.PO0/kk19z9aFKWVGC', 'usuario'),
