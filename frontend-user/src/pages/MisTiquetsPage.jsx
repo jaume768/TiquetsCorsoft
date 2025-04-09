@@ -8,6 +8,7 @@ import '../styles/MisTiquetsPage.css';
 const MisTiquetsPage = () => {
   const { usuario, logout } = useContext(AuthContext);
   const [tiquets, setTiquets] = useState([]);
+  const [ultimosTiquets, setUltimosTiquets] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState(null);
   const [filtros, setFiltros] = useState({
@@ -25,6 +26,13 @@ const MisTiquetsPage = () => {
       setCargando(true);
       const response = await ticketService.getMisTiquets(filtros);
       setTiquets(response.data);
+      
+      // Obtener los 4 últimos tickets para mostrar como tarjetas
+      const ticketsOrdenados = [...response.data].sort((a, b) => 
+        new Date(b.fecha_creacion) - new Date(a.fecha_creacion)
+      );
+      setUltimosTiquets(ticketsOrdenados.slice(0, 4));
+      
       setError(null);
     } catch (error) {
       console.error('Error al cargar tiquets:', error);
@@ -281,46 +289,101 @@ const MisTiquetsPage = () => {
                 </Link>
               </div>
             ) : (
-              <div className="tiquets-grid">
-                {tiquets.map(tiquet => (
-                  <Link
-                    to={`/tiquets/${tiquet.id}`}
-                    className="tiquet-card"
-                    key={tiquet.id}
-                  >
-                    <div className="tiquet-card-header">
-                      <span className={`tiquet-estado ${getEstadoClase(tiquet.estado)}`}>
-                        {getEstadoLabel(tiquet.estado)}
-                      </span>
-                      <span className={`tiquet-prioridad ${getPrioridadClase(tiquet.prioridad)}`}>
-                        {getPrioridadLabel(tiquet.prioridad)}
-                      </span>
-                    </div>
-                    <div className="tiquet-card-body">
-                      <h3 className="tiquet-titulo">{tiquet.titulo}</h3>
-                      <p className="tiquet-descripcion">{tiquet.descripcion}</p>
-                    </div>
-                    <div className="tiquet-card-footer">
-                      <div className="tiquet-footer-info">
-                        <span className="tiquet-id">#{tiquet.id}</span>
-                        <span className="tiquet-fecha">
-                          {new Date(tiquet.fecha_creacion).toLocaleString('es-ES', {
-                            day: '2-digit',
-                            month: 'short',
-                            year: 'numeric',
-                            hour: '2-digit',
-                            minute: '2-digit'
-                          })}
-                        </span>
-                      </div>
-                      <div className="tiquet-comentarios">
-                        <span className="icon-comments">💬</span>
-                        <span>{tiquet.num_comentarios || 0}</span>
-                      </div>
-                    </div>
-                  </Link>
-                ))}
-              </div>
+              <>
+                {/* Sección de últimos tickets como tarjetas */}
+                <div className="ultimos-tiquets-section">
+                  <h3 className="section-title">Últimos Tickets</h3>
+                  <div className="tiquets-grid">
+                    {ultimosTiquets.map(tiquet => (
+                      <Link
+                        to={`/tiquets/${tiquet.id}`}
+                        className="tiquet-card"
+                        key={tiquet.id}
+                      >
+                        <div className="tiquet-card-header">
+                          <span className={`tiquet-estado ${getEstadoClase(tiquet.estado)}`}>
+                            {getEstadoLabel(tiquet.estado)}
+                          </span>
+                          <span className={`tiquet-prioridad ${getPrioridadClase(tiquet.prioridad)}`}>
+                            {getPrioridadLabel(tiquet.prioridad)}
+                          </span>
+                        </div>
+                        <div className="tiquet-card-body">
+                          <h3 className="tiquet-titulo">{tiquet.titulo}</h3>
+                          <p className="tiquet-descripcion">{tiquet.descripcion}</p>
+                        </div>
+                        <div className="tiquet-card-footer">
+                          <div className="tiquet-footer-info">
+                            <span className="tiquet-id">#{tiquet.id}</span>
+                            <span className="tiquet-fecha">
+                              {new Date(tiquet.fecha_creacion).toLocaleString('es-ES', {
+                                day: '2-digit',
+                                month: 'short',
+                                year: 'numeric',
+                                hour: '2-digit',
+                                minute: '2-digit'
+                              })}
+                            </span>
+                          </div>
+                          <div className="tiquet-comentarios">
+                            <span className="icon-comments">💬</span>
+                            <span>{tiquet.num_comentarios || 0}</span>
+                          </div>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+                
+                {/* Sección de todos los tickets como tabla */}
+                <div className="todos-tiquets-section">
+                  <h3 className="section-title">Todos tus Tickets</h3>
+                  <div className="tiquets-table-container">
+                    <table className="tiquets-table">
+                      <thead>
+                        <tr>
+                          <th>ID</th>
+                          <th>Título</th>
+                          <th>Estado</th>
+                          <th>Prioridad</th>
+                          <th>Fecha</th>
+                          <th>Acciones</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {tiquets.map(tiquet => (
+                          <tr key={tiquet.id}>
+                            <td>#{tiquet.id}</td>
+                            <td>{tiquet.titulo}</td>
+                            <td>
+                              <span className={`tiquet-estado-badge ${getEstadoClase(tiquet.estado)}`}>
+                                {getEstadoLabel(tiquet.estado)}
+                              </span>
+                            </td>
+                            <td>
+                              <span className={`tiquet-prioridad-badge ${getPrioridadClase(tiquet.prioridad)}`}>
+                                {getPrioridadLabel(tiquet.prioridad)}
+                              </span>
+                            </td>
+                            <td>
+                              {new Date(tiquet.fecha_creacion).toLocaleString('es-ES', {
+                                day: '2-digit',
+                                month: 'short',
+                                year: 'numeric'
+                              })}
+                            </td>
+                            <td>
+                              <Link to={`/tiquets/${tiquet.id}`} className="ver-tiquet-btn">
+                                Ver detalles
+                              </Link>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </>
             )}
           </div>
         </div>

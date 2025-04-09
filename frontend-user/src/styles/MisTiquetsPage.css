@@ -601,6 +601,83 @@
   }
 }
 
+/* Secciones de tickets */
+.ultimos-tiquets-section,
+.todos-tiquets-section {
+  margin-bottom: 2.5rem;
+}
+
+.section-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #343a40;
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid #e9ecef;
+}
+
+/* Tabla de tickets */
+.tiquets-table-container {
+  overflow-x: auto;
+  background-color: #fff;
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.tiquets-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+.tiquets-table th,
+.tiquets-table td {
+  padding: 1rem;
+  text-align: left;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.tiquets-table th {
+  font-weight: 600;
+  color: #495057;
+  background-color: #f8f9fa;
+}
+
+.tiquets-table tr:last-child td {
+  border-bottom: none;
+}
+
+.tiquets-table tr:hover {
+  background-color: #f8f9fa;
+}
+
+/* Badges para estado y prioridad en la tabla */
+.tiquet-estado-badge,
+.tiquet-prioridad-badge {
+  display: inline-block;
+  padding: 0.35rem 0.65rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 0.25rem;
+  text-transform: uppercase;
+}
+
+/* Botón de ver detalles */
+.ver-tiquet-btn {
+  display: inline-block;
+  padding: 0.375rem 0.75rem;
+  background-color: #0d6efd;
+  color: #fff;
+  border-radius: 0.25rem;
+  text-decoration: none;
+  font-size: 0.875rem;
+  transition: background-color 0.15s ease-in-out;
+}
+
+.ver-tiquet-btn:hover {
+  background-color: #0b5ed7;
+}
+
 @media (max-width: 992px) {
   .filtros-grid {
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));

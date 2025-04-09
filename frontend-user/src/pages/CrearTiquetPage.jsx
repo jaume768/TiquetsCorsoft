@@ -137,6 +137,14 @@ const CrearTiquetPage = () => {
   
   // Función para enviar email a través de EmailJS
   const enviarEmailNotificacion = async (ticket) => {
+    // Verificar si los emails están habilitados en la configuración
+    const emailsEnabled = process.env.REACT_APP_ENABLE_EMAILS === 'true';
+    
+    if (!emailsEnabled) {
+      console.log('Envío de emails deshabilitado en modo desarrollo.');
+      return;
+    }
+
     try {
       // Configuración de EmailJS usando variables de entorno
       const serviceId = process.env.REACT_APP_EMAILJS_SERVICE_ID;
