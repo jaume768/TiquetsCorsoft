@@ -101,7 +101,8 @@ const MisTiquetsPage = () => {
       'baja': 'prioridad-baja',
       'media': 'prioridad-media',
       'alta': 'prioridad-alta',
-      'urgente': 'prioridad-urgente'
+      'urgente': 'prioridad-urgente',
+      'pendiente': 'prioridad-pendiente'
     };
     
     return prioridades[prioridad] || '';
@@ -112,7 +113,8 @@ const MisTiquetsPage = () => {
       'baja': 'Baja',
       'media': 'Media',
       'alta': 'Alta',
-      'urgente': 'Urgente'
+      'urgente': 'Urgente',
+      'pendiente': 'Pendiente'
     };
     
     return prioridades[prioridad] || prioridad;

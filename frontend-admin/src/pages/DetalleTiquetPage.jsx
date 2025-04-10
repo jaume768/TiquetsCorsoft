@@ -171,7 +171,8 @@ const DetalleTiquetPage = () => {
       'baja': { label: 'Baja', className: 'bg-success' },
       'media': { label: 'Media', className: 'bg-info' },
       'alta': { label: 'Alta', className: 'bg-warning' },
-      'urgente': { label: 'Urgente', className: 'bg-danger' }
+      'urgente': { label: 'Urgente', className: 'bg-danger' },
+      'pendiente': { label: 'Pendiente', className: 'bg-warning' }
     };
     
     return prioridades[prioridad] || { label: prioridad, className: 'bg-light' };

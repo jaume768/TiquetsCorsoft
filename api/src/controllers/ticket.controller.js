@@ -207,7 +207,7 @@ const getTiquetPorId = async (req, res) => {
 // Crear un nuevo tiquet
 const crearTiquet = async (req, res) => {
   try {
-    const { titulo, descripcion, prioridad = 'media' } = req.body;
+    const { titulo, descripcion, prioridad = 'pendiente' } = req.body;
     const usuario_id = req.usuario.id;
     
     // Validar campos requeridos

@@ -14,7 +14,7 @@ const CrearTiquetPage = () => {
     titulo: '',
     descripcion: '',
     tipo: 'incidencia',
-    prioridad: 'media',
+    prioridad: 'pendiente',
     imagenes: []
   });
   

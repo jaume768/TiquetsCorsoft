@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS tiquets (
     titulo VARCHAR(255) NOT NULL,
     descripcion TEXT NOT NULL,
     estado ENUM('pendiente', 'en_proceso', 'resuelto', 'cerrado') NOT NULL DEFAULT 'pendiente',
-    prioridad ENUM('baja', 'media', 'alta', 'urgente') NOT NULL DEFAULT 'media',
+    prioridad ENUM('baja', 'media', 'alta', 'urgente','pendiente') NOT NULL DEFAULT 'pendiente',
     imagen_url VARCHAR(255) DEFAULT NULL,
     usuario_id INT NOT NULL,
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

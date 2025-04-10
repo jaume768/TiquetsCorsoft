@@ -530,6 +530,11 @@
   color: #721c24;
 }
 
+.prioridad-pendiente {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
 .tiquet-card-body {
   padding: 1rem;
   flex-grow: 1;

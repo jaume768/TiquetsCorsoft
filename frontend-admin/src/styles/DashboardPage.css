@@ -262,6 +262,11 @@
   color: #721c24;
 }
 
+.prioridad-pendiente {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
 .tiquet-fecha {
   white-space: nowrap;
   color: #6c757d;

@@ -99,7 +99,8 @@ const TiquetsPage = () => {
       'baja': { label: 'Baja', className: 'prioridad-baja' },
       'media': { label: 'Media', className: 'prioridad-media' },
       'alta': { label: 'Alta', className: 'prioridad-alta' },
-      'urgente': { label: 'Urgente', className: 'prioridad-urgente' }
+      'urgente': { label: 'Urgente', className: 'prioridad-urgente' },
+      'pendiente': { label: 'Pendiente', className: 'prioridad-pendiente' }
     };
     
     return prioridades[prioridad] || { label: prioridad, className: 'prioridad-default' };

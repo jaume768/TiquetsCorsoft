@@ -21,8 +21,8 @@ const Tiquet = sequelize.define('Tiquet', {
     allowNull: false
   },
   prioridad: {
-    type: DataTypes.ENUM('baja', 'media', 'alta', 'urgente'),
-    defaultValue: 'media',
+    type: DataTypes.ENUM('baja', 'media', 'alta', 'urgente','pendiente'),
+    defaultValue: 'pendiente',
     allowNull: false
   },
   imagen_url: {
