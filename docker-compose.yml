@@ -45,6 +45,7 @@ services:
     volumes:
       - ./api:/app
       - /app/node_modules
+      - ./uploads:/app/uploads
     networks:
       - tiquets-network
 

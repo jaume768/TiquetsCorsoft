@@ -7,6 +7,8 @@ const authRoutes = require('./routes/auth.routes');
 const ticketRoutes = require('./routes/ticket.routes');
 const userRoutes = require('./routes/user.routes');
 const loginRegistroRoutes = require('./routes/loginRegistro.routes');
+const archivoRoutes = require('./routes/archivo.routes');
+const path = require('path');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -20,6 +22,9 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Configurar rutas estáticas para archivos
+app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
+
 // Ruta de prueba para verificar que la API está funcionando
 app.get('/', (req, res) => {
   res.json({ message: 'Bienvenido a la API de Tiquets Corsoft' });
@@ -30,6 +35,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/tickets', ticketRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/login-registros', loginRegistroRoutes);
+app.use('/api/archivos', archivoRoutes);
 
 // Manejador de errores global
 app.use((err, req, res, next) => {

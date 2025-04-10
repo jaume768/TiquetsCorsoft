@@ -226,36 +226,65 @@ label {
 
 .archivo-preview {
   width: 100%;
-  height: 130px;
+  height: 120px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #f8f9fa;
   overflow: hidden;
-  border-bottom: 1px solid #e9ecef;
+  background-color: #f8f9fa;
+  border-radius: 8px 8px 0 0;
 }
 
 .archivo-preview img {
   max-width: 100%;
-  max-height: 100%;
+  max-height: 120px;
   object-fit: contain;
 }
 
-.archivo-preview .icon-pdf {
-  font-size: 3.5rem;
-  color: #ff4757;
+/* Estilos para iconos de archivos */
+.icon-pdf, .icon-doc, .icon-txt, .icon-zip, .icon-file {
+  font-size: 1rem;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: rgba(255, 71, 87, 0.1);
-  width: 70px;
-  height: 70px;
-  border-radius: 50%;
+  width: 80px;
+  height: 80px;
+  border-radius: 8px;
+  color: white;
+  font-weight: 500;
+  text-align: center;
+}
+
+.icon-pdf {
+  background-color: #ff4d4d;
+}
+
+.icon-doc {
+  background-color: #2b7dec;
+}
+
+.icon-txt {
+  background-color: #6c757d;
+}
+
+.icon-zip {
+  background-color: #ffc107;
+}
+
+.icon-file {
+  background-color: #4a6bff;
+}
+
+.icon-pdf i, .icon-doc i, .icon-txt i, .icon-zip i, .icon-file i {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
 }
 
 .archivo-info {
   padding: 0.5rem;
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   background-color: white;
@@ -268,6 +297,18 @@ label {
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 100px;
+  font-weight: 500;
+}
+
+.archivo-tipo {
+  font-size: 0.65rem;
+  color: #6c757d;
+  text-transform: uppercase;
+  margin-left: auto;
+  padding: 0.15rem 0.35rem;
+  background-color: rgba(0, 0, 0, 0.05);
+  border-radius: 4px;
+  margin-right: 0.25rem;
 }
 
 .archivo-eliminar {

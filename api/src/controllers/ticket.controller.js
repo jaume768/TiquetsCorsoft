@@ -1,4 +1,4 @@
-const { Tiquet, Usuario, HistorialTiquet, ComentarioTiquet, sequelize } = require('../models');
+const { Tiquet, Usuario, HistorialTiquet, ComentarioTiquet, ArchivoTicket, sequelize } = require('../models');
 const nodemailer = require('nodemailer');
 const fs = require('fs');
 const path = require('path');
@@ -218,17 +218,17 @@ const crearTiquet = async (req, res) => {
       });
     }
     
-    // Procesar imagen si existe
+    // Crear directorio uploads si no existe
+    const uploadDir = path.join(__dirname, '../../uploads');
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
+    }
+    
+    // Procesar imagen si existe (para compatibilidad con código existente)
     let imagen_url = null;
     if (req.file) {
       // Guardar la ruta de la imagen
       imagen_url = `/uploads/${req.file.filename}`;
-      
-      // Crear directorio uploads si no existe
-      const uploadDir = path.join(__dirname, '../../uploads');
-      if (!fs.existsSync(uploadDir)) {
-        fs.mkdirSync(uploadDir, { recursive: true });
-      }
     }
     
     // Crear el tiquet
@@ -241,16 +241,53 @@ const crearTiquet = async (req, res) => {
       estado: 'pendiente'
     });
     
+    // Procesar archivos adjuntos si existen
+    if (req.files && req.files.length > 0) {
+      // Crear directorio para los archivos del ticket
+      const ticketDir = path.join(__dirname, '../../uploads/tickets', nuevoTiquet.id.toString());
+      if (!fs.existsSync(ticketDir)) {
+        fs.mkdirSync(ticketDir, { recursive: true });
+      }
+      
+      // Guardar cada archivo en la base de datos
+      const archivosPromises = req.files.map(async (file) => {
+        // Log para depuración
+        console.log('Archivo recibido:', file);
+        console.log('Destino del archivo:', file.path);
+          
+        return ArchivoTicket.create({
+          ticket_id: nuevoTiquet.id,
+          nombre_original: file.originalname,
+          nombre_servidor: file.filename,
+          tipo: file.mimetype,
+          tamanio: file.size,
+          ruta: `/uploads/tickets/${nuevoTiquet.id}/${file.filename}`
+        });
+      });
+      
+      await Promise.all(archivosPromises);
+    }
+    
+    // Obtener el ticket completo con sus archivos
+    const ticketCompleto = await Tiquet.findByPk(nuevoTiquet.id, {
+      include: [
+        {
+          model: ArchivoTicket,
+          as: 'archivos'
+        }
+      ]
+    });
+    
     // Obtener información del usuario para el email
     const usuario = await Usuario.findByPk(usuario_id);
     
     // Enviar email al administrador
-    await enviarEmailNotificacion(nuevoTiquet, usuario);
+    await enviarEmailNotificacion(ticketCompleto, usuario);
     
     return res.status(201).json({
       success: true,
       message: 'Tiquet creado exitosamente',
-      data: nuevoTiquet
+      data: ticketCompleto
     });
   } catch (error) {
     return res.status(500).json({

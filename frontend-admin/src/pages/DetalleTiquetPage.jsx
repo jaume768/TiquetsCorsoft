@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import ticketService from '../services/ticketService';
+import archivoService from '../services/archivoService';
 import ComentariosSection from '../components/ComentariosSection';
+import ArchivosAdjuntos from '../components/ArchivosAdjuntos';
 import AuthContext from '../context/AuthContext';
 import '../styles/DetalleTiquetPage.css';
 
@@ -14,6 +16,8 @@ const DetalleTiquetPage = () => {
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState(null);
   const [editando, setEditando] = useState(false);
+  const [archivos, setArchivos] = useState([]);
+  const [cargandoArchivos, setCargandoArchivos] = useState(false);
   const [formulario, setFormulario] = useState({
     estado: '',
     prioridad: '',
@@ -32,6 +36,14 @@ const DetalleTiquetPage = () => {
           comentario: ''
         });
         setError(null);
+        
+        // Si tiene archivos adjuntos en la respuesta, usarlos
+        if (response.data && response.data.archivos) {
+          setArchivos(response.data.archivos);
+        } else {
+          // Si no, intentar cargar los archivos por separado
+          cargarArchivos();
+        }
       } catch (error) {
         console.error('Error al cargar tiquet:', error);
         if (error.response && error.response.status === 404) {
@@ -43,11 +55,47 @@ const DetalleTiquetPage = () => {
         setCargando(false);
       }
     };
+    
+    // Función para cargar los archivos adjuntos
+    const cargarArchivos = async () => {
+      try {
+        setCargandoArchivos(true);
+        const response = await archivoService.getArchivosPorTicket(id);
+        if (response.success && response.data) {
+          setArchivos(response.data);
+        }
+      } catch (error) {
+        console.error('Error al cargar archivos:', error);
+        // No mostrar error al usuario, solo en consola
+      } finally {
+        setCargandoArchivos(false);
+      }
+    };
 
     if (id) {
       cargarTiquet();
     }
   }, [id]);
+  
+  // Función para eliminar un archivo adjunto
+  const handleEliminarArchivo = (archivoId) => {
+    setArchivos(archivos.filter(archivo => archivo.id !== archivoId));
+  };
+  
+  // Función para recargar los archivos
+  const refrescarArchivos = async () => {
+    try {
+      setCargandoArchivos(true);
+      const response = await archivoService.getArchivosPorTicket(id);
+      if (response.success && response.data) {
+        setArchivos(response.data);
+      }
+    } catch (error) {
+      console.error('Error al recargar archivos:', error);
+    } finally {
+      setCargandoArchivos(false);
+    }
+  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -345,6 +393,15 @@ const DetalleTiquetPage = () => {
                   </div>
                 </div>
               )}
+              
+              {/* Mostrar archivos adjuntos */}
+              <ArchivosAdjuntos 
+                archivos={archivos} 
+                ticketId={tiquet.id}
+                onEliminar={handleEliminarArchivo}
+                refrescarArchivos={refrescarArchivos}
+              />
+              
             </div>
           </div>
           

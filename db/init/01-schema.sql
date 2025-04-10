@@ -30,6 +30,19 @@ CREATE TABLE IF NOT EXISTS tiquets (
     FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
 );
 
+-- Tabla de archivos adjuntos
+CREATE TABLE IF NOT EXISTS archivos_tickets (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    ticket_id INT NOT NULL,
+    nombre_original VARCHAR(255) NOT NULL,
+    nombre_servidor VARCHAR(255) NOT NULL,
+    tipo VARCHAR(100) NOT NULL,
+    tamanio INT NOT NULL,
+    ruta VARCHAR(255) NOT NULL,
+    fecha_subida TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (ticket_id) REFERENCES tiquets(id) ON DELETE CASCADE
+);
+
 -- Tabla de comentarios de tiquets
 CREATE TABLE IF NOT EXISTS comentarios_tiquets (
     id INT AUTO_INCREMENT PRIMARY KEY,

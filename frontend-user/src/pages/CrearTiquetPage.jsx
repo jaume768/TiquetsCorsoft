@@ -29,6 +29,13 @@ const CrearTiquetPage = () => {
     { value: 'otro', label: 'Otro' }
   ];
   
+  const tiposArchivosPermitidos = [
+    'image/jpeg', 'image/png', 'image/gif', 
+    'application/pdf', 'application/msword', 
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    'text/plain', 'application/zip'
+  ];
+  
   // La prioridad se establece por defecto como 'media' y no se permite al usuario modificarla
   
   const handleInputChange = (e) => {
@@ -58,9 +65,8 @@ const CrearTiquetPage = () => {
         return false;
       }
       
-      // Validar tipo de archivo (imágenes y PDFs)
-      const tiposPermitidos = ['image/jpeg', 'image/png', 'image/gif', 'application/pdf'];
-      if (!tiposPermitidos.includes(archivo.type)) {
+      // Validar tipo de archivo
+      if (!tiposArchivosPermitidos.includes(archivo.type)) {
         showError(`El tipo de archivo ${archivo.name} no está permitido`);
         return false;
       }
@@ -68,22 +74,35 @@ const CrearTiquetPage = () => {
       return true;
     });
     
-    // Generar previsualizaciones para imágenes
+    // Generar previsualizaciones para archivos
     const nuevasPreviews = archivosFiltrados.map(archivo => {
       if (archivo.type.startsWith('image/')) {
         return {
           nombre: archivo.name,
           tipo: archivo.type,
           url: URL.createObjectURL(archivo),
-          esPdf: false
+          esImagen: true,
+          esPdf: false,
+          esDocumento: false
         };
-      } else {
-        // Para PDFs mostramos un icono
+      } else if (archivo.type === 'application/pdf') {
         return {
           nombre: archivo.name,
           tipo: archivo.type,
           url: null,
-          esPdf: true
+          esImagen: false,
+          esPdf: true,
+          esDocumento: false
+        };
+      } else {
+        // Para otros tipos de documentos
+        return {
+          nombre: archivo.name,
+          tipo: archivo.type,
+          url: null,
+          esImagen: false,
+          esPdf: false,
+          esDocumento: true
         };
       }
     });
@@ -199,8 +218,8 @@ const CrearTiquetPage = () => {
       
       // Agregar archivos si existen
       if (formulario.imagenes.length > 0) {
-        formulario.imagenes.forEach(imagen => {
-          formData.append('imagenes', imagen);
+        formulario.imagenes.forEach(archivo => {
+          formData.append('archivos', archivo);
         });
       }
       
@@ -309,7 +328,7 @@ const CrearTiquetPage = () => {
                       className="file-upload-input"
                       onChange={handleImagenesChange}
                       multiple
-                      accept="image/jpeg,image/png,image/gif,application/pdf"
+                      accept="image/jpeg,image/png,image/gif,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain,application/zip"
                       disabled={cargando || previews.length >= 5}
                     />
                     <div className="file-upload-button">
@@ -333,14 +352,40 @@ const CrearTiquetPage = () => {
                       {previews.map((preview, index) => (
                         <div className="archivo-item" key={index}>
                           <div className="archivo-preview">
-                            {preview.esPdf ? (
-                              <span className="icon-pdf">📝</span>
-                            ) : (
+                            {preview.esImagen ? (
                               <img src={preview.url} alt={`Vista previa ${index + 1}`} />
+                            ) : preview.esPdf ? (
+                              <span className="icon-pdf">
+                                <i className="far fa-file-pdf"></i>
+                                PDF
+                              </span>
+                            ) : preview.tipo.includes('word') ? (
+                              <span className="icon-doc">
+                                <i className="far fa-file-word"></i>
+                                DOC
+                              </span>
+                            ) : preview.tipo.includes('text/plain') ? (
+                              <span className="icon-txt">
+                                <i className="far fa-file-alt"></i>
+                                TXT
+                              </span>
+                            ) : preview.tipo.includes('zip') ? (
+                              <span className="icon-zip">
+                                <i className="far fa-file-archive"></i>
+                                ZIP
+                              </span>
+                            ) : (
+                              <span className="icon-file">
+                                <i className="far fa-file"></i>
+                                Archivo
+                              </span>
                             )}
                           </div>
                           <div className="archivo-info">
-                            <span className="archivo-nombre">{preview.nombre}</span>
+                            <span className="archivo-nombre" title={preview.nombre}>
+                              {preview.nombre.length > 20 ? preview.nombre.substring(0, 17) + '...' : preview.nombre}
+                            </span>
+                            <span className="archivo-tipo">{preview.tipo.split('/')[1]}</span>
                             <button 
                               type="button" 
                               className="archivo-eliminar"
