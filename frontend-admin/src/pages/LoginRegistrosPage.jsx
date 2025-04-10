@@ -58,9 +58,27 @@ const LoginRegistrosPage = () => {
     try {
       setLoading(true);
       const response = await loginRegistroService.getLoginRegistros(filtros);
-      setRegistros(response.data.registros);
-      setPaginacion(response.data.paginacion);
-      setError(null);
+      
+      // Manejar diferentes estructuras de respuesta posibles
+      if (response.success && response.data && response.data.registros) {
+        // Estructura con paginación
+        setRegistros(response.data.registros);
+        setPaginacion(response.data.paginacion);
+        setError(null);
+      } else if (response.success && Array.isArray(response.data)) {
+        // Estructura antigua (array de registros sin paginación)
+        setRegistros(response.data);
+        setPaginacion({
+          total: response.data.length,
+          pagina: 1,
+          limite: response.data.length,
+          totalPaginas: 1
+        });
+        setError(null);
+      } else {
+        console.error('Formato de respuesta inesperado:', response);
+        setError('Formato de respuesta inesperado del servidor.');
+      }
     } catch (error) {
       console.error('Error al cargar registros de login:', error);
       setError('No se pudieron cargar los registros de login. Por favor, intente nuevamente más tarde.');
@@ -73,9 +91,34 @@ const LoginRegistrosPage = () => {
   const cargarEstadisticas = async () => {
     try {
       const response = await loginRegistroService.getLoginEstadisticas();
-      setEstadisticas(response.data);
+      
+      // Verificar que la respuesta tenga la estructura esperada
+      if (response.success && response.data) {
+        setEstadisticas({
+          totalRegistros: response.data.totalRegistros || 0,
+          loginsPorDia: Array.isArray(response.data.loginsPorDia) ? response.data.loginsPorDia : [],
+          loginsPorUsuario: Array.isArray(response.data.loginsPorUsuario) ? response.data.loginsPorUsuario : [],
+          loginsPorMetodo: Array.isArray(response.data.loginsPorMetodo) ? response.data.loginsPorMetodo : []
+        });
+      } else {
+        // Si la estructura no es la esperada, establecer valores predeterminados
+        setEstadisticas({
+          totalRegistros: 0,
+          loginsPorDia: [],
+          loginsPorUsuario: [],
+          loginsPorMetodo: []
+        });
+        console.error('Formato de respuesta inesperado para estadísticas:', response);
+      }
     } catch (error) {
       console.error('Error al cargar estadísticas:', error);
+      // Establecer valores predeterminados en caso de error
+      setEstadisticas({
+        totalRegistros: 0,
+        loginsPorDia: [],
+        loginsPorUsuario: [],
+        loginsPorMetodo: []
+      });
     }
   };
 
@@ -292,6 +335,13 @@ const LoginRegistrosPage = () => {
                 </tbody>
               </table>
             </div>
+            
+            {/* Información de paginación */}
+            {registros.length > 0 && (
+              <div className="paginacion-info">
+                Mostrando {registros.length} de {paginacion.total} registros - Página {paginacion.pagina} de {paginacion.totalPaginas}
+              </div>
+            )}
             
             {paginacion.totalPaginas > 1 && (
               <div className="paginacion">

@@ -302,6 +302,13 @@
   color: #212529;
 }
 
+.paginacion-info {
+  text-align: center;
+  color: #6c757d;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+}
+
 .tiquets-pagination {
   display: flex;
   justify-content: center;

@@ -2,11 +2,15 @@ import api from './api';
 
 const ticketService = {
   getTodosTiquets: async (filtros = {}) => {
+    const { estado, prioridad, usuario_id, busqueda, pagina = 1, limite = 10 } = filtros;
+    
     const params = new URLSearchParams();
-    if (filtros.estado) params.append('estado', filtros.estado);
-    if (filtros.prioridad) params.append('prioridad', filtros.prioridad);
-    if (filtros.usuario_id) params.append('usuario_id', filtros.usuario_id);
-    if (filtros.busqueda) params.append('busqueda', filtros.busqueda);
+    if (estado) params.append('estado', estado);
+    if (prioridad) params.append('prioridad', prioridad);
+    if (usuario_id) params.append('usuario_id', usuario_id);
+    if (busqueda) params.append('busqueda', busqueda);
+    params.append('pagina', pagina);
+    params.append('limite', limite);
     
     const response = await api.get(`/tickets?${params.toString()}`);
     return response.data;

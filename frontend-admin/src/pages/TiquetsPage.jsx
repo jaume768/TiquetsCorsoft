@@ -9,23 +9,48 @@ const TiquetsPage = () => {
   const [filtros, setFiltros] = useState({
     estado: '',
     prioridad: '',
-    busqueda: ''
+    busqueda: '',
+    pagina: 1,
+    limite: 10
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [paginaActual, setPaginaActual] = useState(1);
-  const tiquetsPorPagina = 10;
+  const [paginacion, setPaginacion] = useState({
+    total: 0,
+    pagina: 1,
+    limite: 10,
+    totalPaginas: 0
+  });
 
   useEffect(() => {
     cargarTiquets();
-  }, [filtros, paginaActual]);
+  }, [filtros]);
 
   const cargarTiquets = async () => {
     try {
       setLoading(true);
       const response = await ticketService.getTodosTiquets(filtros);
-      setTiquets(response.data);
-      setError(null);
+      
+      // Manejar diferentes estructuras de respuesta posibles
+      if (response.success && response.data && response.data.tiquets) {
+        // Nueva estructura con paginación
+        setTiquets(response.data.tiquets);
+        setPaginacion(response.data.paginacion);
+        setError(null);
+      } else if (response.success && Array.isArray(response.data)) {
+        // Estructura antigua (array de tiquets sin paginación)
+        setTiquets(response.data);
+        setPaginacion({
+          total: response.data.length,
+          pagina: 1,
+          limite: response.data.length,
+          totalPaginas: 1
+        });
+        setError(null);
+      } else {
+        console.error('Formato de respuesta inesperado:', response);
+        setError('Formato de respuesta inesperado del servidor.');
+      }
     } catch (error) {
       console.error('Error al cargar tiquets:', error);
       setError('No se pudieron cargar los tickets. Por favor, intente nuevamente más tarde.');
@@ -36,8 +61,11 @@ const TiquetsPage = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFiltros({ ...filtros, [name]: value });
-    setPaginaActual(1); // Resetear a la primera página al cambiar filtros
+    setFiltros({
+      ...filtros,
+      [name]: value,
+      pagina: 1 // Resetear a la primera página al cambiar filtros
+    });
   };
 
   const handleBusquedaSubmit = (e) => {
@@ -49,9 +77,10 @@ const TiquetsPage = () => {
     setFiltros({
       estado: '',
       prioridad: '',
-      busqueda: ''
+      busqueda: '',
+      pagina: 1,
+      limite: 10
     });
-    setPaginaActual(1);
   };
 
   const getEstadoLabel = (estado) => {
@@ -76,14 +105,12 @@ const TiquetsPage = () => {
     return prioridades[prioridad] || { label: prioridad, className: 'prioridad-default' };
   };
 
-  // Paginación
-  const indexUltimoTiquet = paginaActual * tiquetsPorPagina;
-  const indexPrimerTiquet = indexUltimoTiquet - tiquetsPorPagina;
-  const tiquetsActuales = tiquets.slice(indexPrimerTiquet, indexUltimoTiquet);
-  const totalPaginas = Math.ceil(tiquets.length / tiquetsPorPagina);
-
+  // Cambiar página
   const cambiarPagina = (numeroPagina) => {
-    setPaginaActual(numeroPagina);
+    setFiltros({
+      ...filtros,
+      pagina: numeroPagina
+    });
   };
 
   return (
@@ -201,7 +228,7 @@ const TiquetsPage = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {tiquetsActuales.map(tiquet => (
+                  {tiquets.map(tiquet => (
                     <tr key={tiquet.id}>
                       <td className="tiquet-id">#{tiquet.id}</td>
                       <td className="tiquet-titulo">{tiquet.titulo}</td>
@@ -230,21 +257,28 @@ const TiquetsPage = () => {
               </table>
             </div>
             
+            {/* Información de paginación */}
+            {tiquets.length > 0 && (
+              <div className="paginacion-info">
+                Mostrando {tiquets.length} de {paginacion.total} tickets - Página {paginacion.pagina} de {paginacion.totalPaginas}
+              </div>
+            )}
+            
             {/* Paginación */}
-            {totalPaginas > 1 && (
+            {paginacion.totalPaginas > 1 && (
               <div className="tiquets-pagination">
                 <button 
                   className="pagination-button"
-                  onClick={() => cambiarPagina(paginaActual - 1)}
-                  disabled={paginaActual === 1}
+                  onClick={() => cambiarPagina(paginacion.pagina - 1)}
+                  disabled={paginacion.pagina === 1}
                 >
                   <i className="icon icon-chevron-left"></i>
                 </button>
                 
-                {[...Array(totalPaginas).keys()].map(numero => (
+                {[...Array(paginacion.totalPaginas).keys()].map(numero => (
                   <button
                     key={numero + 1}
-                    className={`pagination-button ${paginaActual === numero + 1 ? 'active' : ''}`}
+                    className={`pagination-button ${paginacion.pagina === numero + 1 ? 'active' : ''}`}
                     onClick={() => cambiarPagina(numero + 1)}
                   >
                     {numero + 1}
@@ -253,8 +287,8 @@ const TiquetsPage = () => {
                 
                 <button 
                   className="pagination-button"
-                  onClick={() => cambiarPagina(paginaActual + 1)}
-                  disabled={paginaActual === totalPaginas}
+                  onClick={() => cambiarPagina(paginacion.pagina + 1)}
+                  disabled={paginacion.pagina === paginacion.totalPaginas}
                 >
                   <i className="icon icon-chevron-right"></i>
                 </button>

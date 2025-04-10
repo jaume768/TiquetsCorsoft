@@ -343,6 +343,13 @@
 }
 
 /* Paginación */
+.paginacion-info {
+  text-align: center;
+  color: #6c757d;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+}
+
 .paginacion {
   display: flex;
   justify-content: center;

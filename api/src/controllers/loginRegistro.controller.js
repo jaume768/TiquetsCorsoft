@@ -73,48 +73,67 @@ const getLoginEstadisticas = async (req, res) => {
     // Estadísticas generales
     const totalRegistros = await LoginRegistro.count();
     
-    // Logins por día (últimos 30 días)
-    const loginsPorDia = await LoginRegistro.findAll({
-      attributes: [
-        [sequelize.fn('DATE', sequelize.col('fecha_login')), 'fecha'],
-        [sequelize.fn('COUNT', sequelize.col('id')), 'total']
-      ],
-      where: {
-        fecha_login: {
-          [sequelize.Op.gte]: new Date(new Date() - 30 * 24 * 60 * 60 * 1000)
-        }
-      },
-      group: [sequelize.fn('DATE', sequelize.col('fecha_login'))],
-      order: [[sequelize.fn('DATE', sequelize.col('fecha_login')), 'ASC']]
-    });
+    let loginsPorDia = [];
+    let loginsPorUsuario = [];
+    let loginsPorMetodo = [];
     
-    // Logins por usuario (top 10)
-    const loginsPorUsuario = await LoginRegistro.findAll({
-      attributes: [
-        'usuario_id',
-        [sequelize.fn('COUNT', sequelize.col('id')), 'total']
-      ],
-      include: [
-        {
-          model: Usuario,
-          as: 'usuario',
-          attributes: ['nombre', 'email']
-        }
-      ],
-      group: ['usuario_id'],
-      order: [[sequelize.fn('COUNT', sequelize.col('id')), 'DESC']],
-      limit: 10
-    });
+    try {
+      // Logins por día (últimos 30 días)
+      loginsPorDia = await LoginRegistro.findAll({
+        attributes: [
+          [sequelize.fn('DATE', sequelize.col('fecha_login')), 'fecha'],
+          [sequelize.fn('COUNT', sequelize.col('id')), 'total']
+        ],
+        where: {
+          fecha_login: {
+            [sequelize.Op.gte]: new Date(new Date() - 30 * 24 * 60 * 60 * 1000)
+          }
+        },
+        group: [sequelize.fn('DATE', sequelize.col('fecha_login'))],
+        order: [[sequelize.fn('DATE', sequelize.col('fecha_login')), 'ASC']]
+      });
+    } catch (err) {
+      console.error('Error al obtener logins por día:', err);
+      // Si falla, devolver un array vacío para no bloquear toda la respuesta
+    }
     
-    // Logins por método
-    const loginsPorMetodo = await LoginRegistro.findAll({
-      attributes: [
-        'metodo_login',
-        [sequelize.fn('COUNT', sequelize.col('id')), 'total']
-      ],
-      group: ['metodo_login'],
-      order: [[sequelize.fn('COUNT', sequelize.col('id')), 'DESC']]
-    });
+    try {
+      // Logins por usuario (top 10)
+      loginsPorUsuario = await LoginRegistro.findAll({
+        attributes: [
+          'usuario_id',
+          [sequelize.fn('COUNT', sequelize.col('id')), 'total']
+        ],
+        include: [
+          {
+            model: Usuario,
+            as: 'usuario',
+            attributes: ['nombre', 'email']
+          }
+        ],
+        group: ['usuario_id', 'usuario.id', 'usuario.nombre', 'usuario.email'],
+        order: [[sequelize.fn('COUNT', sequelize.col('id')), 'DESC']],
+        limit: 10
+      });
+    } catch (err) {
+      console.error('Error al obtener logins por usuario:', err);
+      // Si falla, devolver un array vacío para no bloquear toda la respuesta
+    }
+    
+    try {
+      // Logins por método
+      loginsPorMetodo = await LoginRegistro.findAll({
+        attributes: [
+          'metodo_login',
+          [sequelize.fn('COUNT', sequelize.col('id')), 'total']
+        ],
+        group: ['metodo_login'],
+        order: [[sequelize.fn('COUNT', sequelize.col('id')), 'DESC']]
+      });
+    } catch (err) {
+      console.error('Error al obtener logins por método:', err);
+      // Si falla, devolver un array vacío para no bloquear toda la respuesta
+    }
     
     return res.status(200).json({
       success: true,
@@ -126,6 +145,7 @@ const getLoginEstadisticas = async (req, res) => {
       }
     });
   } catch (error) {
+    console.error('Error general en getLoginEstadisticas:', error);
     return res.status(500).json({
       success: false,
       message: 'Error al obtener las estadísticas de login',

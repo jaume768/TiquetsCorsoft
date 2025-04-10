@@ -46,7 +46,7 @@ const enviarEmailNotificacion = async (tiquet, usuario) => {
 // Obtener todos los tiquets (solo admin)
 const getTodosTiquets = async (req, res) => {
   try {
-    const { estado, prioridad, usuario_id, busqueda } = req.query;
+    const { estado, prioridad, usuario_id, busqueda, pagina = 1, limite = 10 } = req.query;
     const filtro = {};
     
     // Aplicar filtros si existen
@@ -67,7 +67,11 @@ const getTodosTiquets = async (req, res) => {
       };
     }
     
-    const tiquets = await Tiquet.findAll({
+    // Calcular offset para paginación
+    const offset = (pagina - 1) * limite;
+    
+    // Obtener tiquets con paginación
+    const { count, rows: tiquets } = await Tiquet.findAndCountAll({
       where: whereCondition,
       include: [
         {
@@ -76,12 +80,25 @@ const getTodosTiquets = async (req, res) => {
           attributes: ['id', 'nombre', 'email']
         }
       ],
-      order: [['fecha_creacion', 'DESC']]
+      order: [['fecha_creacion', 'DESC']],
+      limit: parseInt(limite),
+      offset: offset
     });
+    
+    // Calcular total de páginas
+    const totalPaginas = Math.ceil(count / limite);
     
     return res.status(200).json({
       success: true,
-      data: tiquets
+      data: {
+        tiquets,
+        paginacion: {
+          total: count,
+          pagina: parseInt(pagina),
+          limite: parseInt(limite),
+          totalPaginas
+        }
+      }
     });
   } catch (error) {
     return res.status(500).json({

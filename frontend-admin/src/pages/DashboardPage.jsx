@@ -27,7 +27,17 @@ const DashboardPage = () => {
         setLoading(true);
         // Cargar todos los tiquets para las estadísticas
         const responseTiquets = await ticketService.getTodosTiquets();
-        const tiquets = responseTiquets.data;
+        
+        // Verificar la estructura de la respuesta
+        let tiquets = [];
+        if (responseTiquets.success && responseTiquets.data && responseTiquets.data.tiquets) {
+          tiquets = responseTiquets.data.tiquets;
+        } else if (Array.isArray(responseTiquets.data)) {
+          tiquets = responseTiquets.data;
+        } else {
+          console.error('Formato de respuesta inesperado:', responseTiquets);
+          throw new Error('Formato de respuesta inesperado');
+        }
         
         // Calcular estadísticas
         const totalTiquets = tiquets.length;
