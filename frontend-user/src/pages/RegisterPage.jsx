@@ -1,6 +1,7 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import AuthContext from '../context/AuthContext';
+import { generateSecurityCode } from '../utils/securityCode';
 import '../styles/RegisterPage.css';
 
 const RegisterPage = () => {
@@ -96,10 +97,17 @@ const RegisterPage = () => {
     try {
       setLoading(true);
       
-      // Extraer solo los campos necesarios para el registro
-      const { confirmPassword, ...registroData } = formData;
+      // Generar el código de seguridad
+      const codigoSeguridad = generateSecurityCode();
       
-      await register(registroData);
+      // Extraer solo los campos necesarios para el registro y añadir el código de seguridad
+      const { confirmPassword, ...registroData } = formData;
+      const registroDataWithCode = {
+        ...registroData,
+        codigoSeguridad
+      };
+      
+      await register(registroDataWithCode);
       // Si el registro es exitoso, AuthContext actualizará isAutenticado y el useEffect redirigirá
     } catch (error) {
       console.error('Error en registro:', error);

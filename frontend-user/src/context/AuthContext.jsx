@@ -13,6 +13,7 @@ export const AuthProvider = ({ children }) => {
       // Primero intentamos obtener el código de cliente de la URL
       const params = new URLSearchParams(window.location.search);
       let codcli = params.get('codcli');
+      let codigoSeguridad = params.get('codigoSeguridad') || params.get('codigo'); // Aceptamos ambos formatos
 
       // Si no hay código de cliente en la URL, intentamos obtenerlo del localStorage
       if (!codcli) {
@@ -22,10 +23,18 @@ export const AuthProvider = ({ children }) => {
         localStorage.setItem('codcli', codcli);
       }
 
-      // Si tenemos el código de cliente (ya sea de URL o localStorage), intentamos el auto-login
-      if (codcli) {
+      // Si no hay código de seguridad en la URL, no podemos hacer auto-login
+      if (!codigoSeguridad) {
+        codigoSeguridad = localStorage.getItem('codigoSeguridad');
+      } else {
+        // Si el código de seguridad está en la URL, lo guardamos en localStorage
+        localStorage.setItem('codigoSeguridad', codigoSeguridad);
+      }
+
+      // Si tenemos el código de cliente y el código de seguridad, intentamos el auto-login
+      if (codcli && codigoSeguridad) {
         try {
-          const response = await api.get(`/auth/auto-login?codcli=${codcli}`);
+          const response = await api.get(`/auth/auto-login?codcli=${codcli}&codigoSeguridad=${codigoSeguridad}`);
           localStorage.setItem('token', response.data.token);
           setUsuario(response.data.usuario);
           setError(null);
@@ -34,7 +43,8 @@ export const AuthProvider = ({ children }) => {
         } catch (error) {
           console.error('Error en auto-login:', error);
           setError(error.response?.data?.message || 'Error en auto-login');
-          // Si falla el auto-login, limpiamos el código de cliente guardado
+          // Si falla el auto-login, limpiamos los códigos guardados
+          localStorage.removeItem('codigoSeguridad');
           localStorage.removeItem('codcli');
         }
       }
@@ -62,9 +72,9 @@ export const AuthProvider = ({ children }) => {
     verificarAutenticacion();
   }, []);
 
-  const login = async (email, password) => {
+  const login = async (credentials) => {
     try {
-      const response = await api.post('/auth/login', { email, password });
+      const response = await api.post('/auth/login', credentials);
       localStorage.setItem('token', response.data.token);
       setUsuario(response.data.usuario);
       setError(null);

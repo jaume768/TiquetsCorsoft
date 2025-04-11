@@ -1,6 +1,7 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import AuthContext from '../context/AuthContext';
+import { generateSecurityCode } from '../utils/securityCode';
 import '../styles/LoginPage.css';
 
 const LoginPage = () => {
@@ -44,7 +45,17 @@ const LoginPage = () => {
     
     try {
       setLoading(true);
-      await login(credentials);
+      
+      // Generar el código de seguridad
+      const codigoSeguridad = generateSecurityCode();
+      
+      // Añadir el código de seguridad a las credenciales
+      const credentialsWithCode = {
+        ...credentials,
+        codigoSeguridad
+      };
+      
+      await login(credentialsWithCode);
       // Si login es exitoso, AuthContext actualizará isAutenticado y el useEffect redirigirá
     } catch (error) {
       console.error('Error en login:', error);
