@@ -15,6 +15,17 @@
   animation: fadeIn 0.4s ease-out;
 }
 
+.detalle-tiquet{
+  width: 800px;
+  margin: auto;
+}
+
+@media (max-width: 768px) {
+  .detalle-tiquet {
+    width: 400px;
+  }
+}
+
 /* Barra de acciones */
 .d-flex.justify-content-between {
   margin-bottom: 1.5rem;

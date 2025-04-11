@@ -200,22 +200,7 @@ const MisTiquetsPage = () => {
                   </select>
                 </div>
                 
-                <div className="filtro-group">
-                  <label htmlFor="prioridad" className="filtro-label">Prioridad</label>
-                  <select
-                    id="prioridad"
-                    name="prioridad"
-                    className="filtro-select"
-                    value={filtros.prioridad}
-                    onChange={handleFiltroChange}
-                  >
-                    <option value="">Todas</option>
-                    <option value="baja">Baja</option>
-                    <option value="media">Media</option>
-                    <option value="alta">Alta</option>
-                    <option value="urgente">Urgente</option>
-                  </select>
-                </div>
+                {/* Filtro de prioridad oculto para usuarios */}
                 
                 <div className="filtro-group busqueda-group">
                   <label htmlFor="busqueda" className="filtro-label">Buscar</label>
@@ -306,9 +291,7 @@ const MisTiquetsPage = () => {
                           <span className={`tiquet-estado ${getEstadoClase(tiquet.estado)}`}>
                             {getEstadoLabel(tiquet.estado)}
                           </span>
-                          <span className={`tiquet-prioridad ${getPrioridadClase(tiquet.prioridad)}`}>
-                            {getPrioridadLabel(tiquet.prioridad)}
-                          </span>
+                          {/* Prioridad oculta para usuarios */}
                         </div>
                         <div className="tiquet-card-body">
                           <h3 className="tiquet-titulo">{tiquet.titulo}</h3>
@@ -347,7 +330,7 @@ const MisTiquetsPage = () => {
                           <th>ID</th>
                           <th>Título</th>
                           <th>Estado</th>
-                          <th>Prioridad</th>
+                          {/* Prioridad oculta para usuarios */}
                           <th>Fecha</th>
                           <th>Acciones</th>
                         </tr>
@@ -360,11 +343,6 @@ const MisTiquetsPage = () => {
                             <td>
                               <span className={`tiquet-estado-badge ${getEstadoClase(tiquet.estado)}`}>
                                 {getEstadoLabel(tiquet.estado)}
-                              </span>
-                            </td>
-                            <td>
-                              <span className={`tiquet-prioridad-badge ${getPrioridadClase(tiquet.prioridad)}`}>
-                                {getPrioridadLabel(tiquet.prioridad)}
                               </span>
                             </td>
                             <td>

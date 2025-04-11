@@ -129,7 +129,7 @@ const DetalleTiquetPage = () => {
   }
 
   const { estado } = getEstadoLabel(tiquet.estado);
-  const { prioridad } = getPrioridadLabel(tiquet.prioridad);
+  // Prioridad oculta para usuarios
 
   return (
     <div className="tiquet-container">
@@ -156,12 +156,7 @@ const DetalleTiquetPage = () => {
                   {getEstadoLabel(tiquet.estado).label}
                 </span>
               </p>
-              <p>
-                <strong>Prioridad:</strong> 
-                <span className={`tiquet-badge ${getPrioridadLabel(tiquet.prioridad).className.replace('bg-', 'badge-')}`}>
-                  {getPrioridadLabel(tiquet.prioridad).label}
-                </span>
-              </p>
+              {/* Prioridad oculta para usuarios */}
             </div>
             <div className="tiquet-metadata">
               <p><strong>Fecha de creación:</strong> {new Date(tiquet.fecha_creacion).toLocaleString('es-ES', {
