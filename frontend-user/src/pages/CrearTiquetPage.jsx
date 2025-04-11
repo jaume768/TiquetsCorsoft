@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { showSuccess, showError, showWarning } from '../components/Notification';
 import ticketService from '../services/ticketService';
 import AuthContext from '../context/AuthContext';
+import Header from '../components/Header';
 import emailjs from '@emailjs/browser';
 import '../styles/CrearTiquetPage.css';
 

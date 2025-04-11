@@ -4,6 +4,7 @@ import ticketService from '../services/ticketService';
 import archivoService from '../services/archivoService';
 import ComentariosSection from '../components/ComentariosSection';
 import ArchivosAdjuntos from '../components/ArchivosAdjuntos';
+import Header from '../components/Header';
 import AuthContext from '../context/AuthContext';
 import '../styles/DetalleTiquetPage.css';
 
@@ -133,6 +134,7 @@ const DetalleTiquetPage = () => {
 
   return (
     <div className="tiquet-container">
+      <Header usuario={usuario} />
       <div className="tiquet-header">
         <button 
           className="tiquet-back-button"

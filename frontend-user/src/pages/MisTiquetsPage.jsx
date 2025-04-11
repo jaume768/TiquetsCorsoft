@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Link } from 'react-router-dom';
-import ticketService from '../services/ticketService';
+import { Link, useNavigate } from 'react-router-dom';
 import AuthContext from '../context/AuthContext';
-import NotificacionesDropdown from '../components/NotificacionesDropdown';
+import ticketService from '../services/ticketService';
+import Header from '../components/Header';
 import '../styles/MisTiquetsPage.css';
 
 const MisTiquetsPage = () => {
@@ -122,54 +122,7 @@ const MisTiquetsPage = () => {
   
   return (
     <div className="mis-tiquets-page">
-      <header className="header">
-        <div className="container">
-          <div className="header-content">
-            <h1 className="logo">
-              Tickets<span>Corsoft</span>
-            </h1>
-            <nav className="nav">
-              <Link to="/mis-tiquets" className="nav-link active">
-                <span className="icon-tickets">🎟️</span>
-                <span>Mis Tickets</span>
-              </Link>
-              <Link to="/tiquets/nuevo" className="nav-link">
-                <span className="icon-new-ticket">➕</span>
-                <span>Nuevo Ticket</span>
-              </Link>
-            </nav>
-            <div className="header-actions">
-              <NotificacionesDropdown />
-              <div className="user-dropdown">
-                <button className="user-dropdown-toggle">
-                  <div className="user-avatar">
-                    <span>{usuario?.nombre?.[0] || 'U'}</span>
-                  </div>
-                  <span className="user-name">{usuario?.nombre || 'Usuario'}</span>
-                  <span className="icon-chevron-down">▼</span>
-                </button>
-                <div className="user-dropdown-menu">
-                  <div className="user-info">
-                    <div className="user-avatar">
-                      <span>{usuario?.nombre?.[0] || 'U'}</span>
-                    </div>
-                    <div className="user-details">
-                      <p className="user-fullname">{usuario?.nombre || 'Usuario'}</p>
-                      <p className="user-email">{usuario?.email || 'usuario@example.com'}</p>
-                    </div>
-                  </div>
-                  <div className="user-actions">
-                    <button className="user-action-btn" onClick={handleLogout}>
-                      <span className="icon-logout">🚪</span>
-                      <span>Cerrar Sesión</span>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </header>
+      <Header usuario={usuario} />
       
       <main className="main-content">
         <div className="container">
