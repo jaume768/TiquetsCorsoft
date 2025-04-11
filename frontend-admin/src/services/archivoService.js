@@ -11,12 +11,15 @@ const archivoService = {
   // Descargar un archivo
   descargarArchivo: async (archivoId) => {
     try {
+      // Usamos el cliente API configurado que ya maneja los tokens automáticamente
       const response = await api.get(`/archivos/archivos/${archivoId}`, {
         responseType: 'blob'
       });
       
+      // Axios almacena la respuesta en la propiedad data
       return response.data;
     } catch (error) {
+      console.error('Error en descargarArchivo:', error);
       throw error;
     }
   },

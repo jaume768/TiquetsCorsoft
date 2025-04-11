@@ -249,12 +249,32 @@ const crearTiquet = async (req, res) => {
         fs.mkdirSync(ticketDir, { recursive: true });
       }
       
-      // Guardar cada archivo en la base de datos
+      // Guardar cada archivo en la base de datos y moverlo de la carpeta temp a la carpeta del ticket
       const archivosPromises = req.files.map(async (file) => {
         // Log para depuración
         console.log('Archivo recibido:', file);
         console.log('Destino del archivo:', file.path);
-          
+        
+        // Construir las rutas de origen y destino
+        const origenPath = file.path; // Ruta actual (probablemente en temp)
+        const destinoPath = path.join(ticketDir, file.filename); // Nueva ruta en la carpeta del ticket
+        
+        // Mover el archivo de temp a la carpeta del ticket
+        if (origenPath !== destinoPath) {
+          console.log(`Moviendo archivo: ${origenPath} -> ${destinoPath}`);
+          try {
+            if (fs.existsSync(origenPath)) {
+              fs.copyFileSync(origenPath, destinoPath);
+              fs.unlinkSync(origenPath); // Eliminar el archivo original
+              console.log('Archivo movido correctamente');
+            } else {
+              console.error('El archivo origen no existe:', origenPath);
+            }
+          } catch (err) {
+            console.error('Error al mover el archivo:', err);
+          }
+        }
+        
         return ArchivoTicket.create({
           ticket_id: nuevoTiquet.id,
           nombre_original: file.originalname,

@@ -61,7 +61,8 @@ const DetalleTiquetPage = () => {
       try {
         setCargandoArchivos(true);
         const response = await archivoService.getArchivosPorTicket(id);
-        if (response.success && response.data) {
+        console.log('Respuesta de archivos:', response);
+        if (response && response.data) {
           setArchivos(response.data);
         }
       } catch (error) {

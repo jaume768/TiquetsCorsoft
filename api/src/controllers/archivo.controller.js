@@ -7,6 +7,9 @@ const descargarArchivo = async (req, res) => {
   try {
     const { archivoId } = req.params;
     
+    console.log('Solicitud de descarga para archivo ID:', archivoId);
+    console.log('Usuario solicitante:', req.usuario.id, req.usuario.rol);
+    
     // Buscar archivo
     const archivo = await ArchivoTicket.findByPk(archivoId, {
       include: [{

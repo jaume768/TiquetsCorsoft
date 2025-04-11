@@ -25,6 +25,8 @@ const ArchivosAdjuntos = ({ archivos, ticketId, onEliminar, refrescarArchivos })
   const handleDescargar = async (archivo) => {
     try {
       setArchivosCargando(prev => ({ ...prev, [archivo.id]: true }));
+      
+      // Volver a usar el enfoque original con blob
       const blob = await archivoService.descargarArchivo(archivo.id);
       
       // Crear URL para descarga
@@ -38,7 +40,8 @@ const ArchivosAdjuntos = ({ archivos, ticketId, onEliminar, refrescarArchivos })
       // Limpieza
       link.parentNode.removeChild(link);
       window.URL.revokeObjectURL(url);
-      showSuccess('Archivo descargado correctamente');
+      
+      showSuccess('Descargando archivo...');
     } catch (error) {
       console.error('Error al descargar archivo:', error);
       showError('Error al descargar el archivo');
