@@ -15,24 +15,18 @@ export const AuthProvider = ({ children }) => {
       let codcli = params.get('codcli');
       let codigoSeguridad = params.get('codigoSeguridad') || params.get('codigo'); // Aceptamos ambos formatos
 
-      // Si no hay código de cliente en la URL, intentamos obtenerlo del localStorage
-      if (!codcli) {
-        codcli = localStorage.getItem('codcli');
-      } else {
-        // Si el código de cliente está en la URL, lo guardamos en localStorage
+      // Si hay parámetros de auto-login en la URL, intentamos el proceso
+      if (codcli || codigoSeguridad) {
+        // Si falta algún parámetro necesario, redirigimos a la página 404
+        if (!codcli || !codigoSeguridad) {
+          window.location.href = '/not-found';
+          return;
+        }
+
+        // Guardamos los parámetros en localStorage
         localStorage.setItem('codcli', codcli);
-      }
-
-      // Si no hay código de seguridad en la URL, no podemos hacer auto-login
-      if (!codigoSeguridad) {
-        codigoSeguridad = localStorage.getItem('codigoSeguridad');
-      } else {
-        // Si el código de seguridad está en la URL, lo guardamos en localStorage
         localStorage.setItem('codigoSeguridad', codigoSeguridad);
-      }
 
-      // Si tenemos el código de cliente y el código de seguridad, intentamos el auto-login
-      if (codcli && codigoSeguridad) {
         try {
           const response = await api.get(`/auth/auto-login?codcli=${codcli}&codigoSeguridad=${codigoSeguridad}`);
           localStorage.setItem('token', response.data.token);
@@ -42,8 +36,29 @@ export const AuthProvider = ({ children }) => {
           return;
         } catch (error) {
           console.error('Error en auto-login:', error);
-          setError(error.response?.data?.message || 'Error en auto-login');
-          // Si falla el auto-login, limpiamos los códigos guardados
+          // En caso de cualquier error, redirigimos a la página 404 sin mostrar detalles
+          localStorage.removeItem('codigoSeguridad');
+          localStorage.removeItem('codcli');
+          window.location.href = '/not-found';
+          return;
+        }
+      }
+      
+      // Si no hay parámetros en la URL, intentamos recuperar del localStorage
+      codcli = localStorage.getItem('codcli');
+      codigoSeguridad = localStorage.getItem('codigoSeguridad');
+      
+      if (codcli && codigoSeguridad) {
+        try {
+          const response = await api.get(`/auth/auto-login?codcli=${codcli}&codigoSeguridad=${codigoSeguridad}`);
+          localStorage.setItem('token', response.data.token);
+          setUsuario(response.data.usuario);
+          setError(null);
+          setCargando(false);
+          return;
+        } catch (error) {
+          console.error('Error en auto-login desde localStorage:', error);
+          // Limpiamos los códigos guardados
           localStorage.removeItem('codigoSeguridad');
           localStorage.removeItem('codcli');
         }
