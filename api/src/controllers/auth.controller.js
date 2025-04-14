@@ -50,22 +50,6 @@ const login = async (req, res) => {
       });
     }
     
-    // Validar que se envió el código de seguridad
-    if (!codigoSeguridad) {
-      return res.status(400).json({
-        success: false,
-        message: 'El código de seguridad es requerido'
-      });
-    }
-    
-    // Validar el código de seguridad
-    if (!validarCodigoSeguridad(codigoSeguridad)) {
-      return res.status(401).json({
-        success: false,
-        message: 'Código de seguridad inválido'
-      });
-    }
-
     // Buscar usuario por email
     const usuario = await Usuario.findOne({ where: { email } });
     if (!usuario) {
@@ -74,7 +58,26 @@ const login = async (req, res) => {
         message: 'Usuario no encontrado'
       });
     }
-
+    
+    // Si el usuario NO es admin, validar el código de seguridad
+    if (usuario.rol !== 'admin') {
+      // Validar que se envió el código de seguridad para usuarios no admin
+      if (!codigoSeguridad) {
+        return res.status(400).json({
+          success: false,
+          message: 'El código de seguridad es requerido'
+        });
+      }
+      
+      // Validar el código de seguridad
+      if (!validarCodigoSeguridad(codigoSeguridad)) {
+        return res.status(401).json({
+          success: false,
+          message: 'Código de seguridad inválido'
+        });
+      }
+    }
+    
     // Verificar password
     const passwordValido = await usuario.validarPassword(password);
     if (!passwordValido) {
