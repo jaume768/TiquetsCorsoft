@@ -176,10 +176,10 @@ const actualizarUsuario = async (req, res) => {
     if (nombre) usuario.nombre = nombre;
     if (email) usuario.email = email;
     
-    // Si se proporciona una nueva contraseña, hashearla
+    // Si se proporciona una nueva contraseña, asignarla directamente
+    // El hook beforeUpdate del modelo se encargará de hashearla
     if (password) {
-      const salt = await bcrypt.genSalt(10);
-      usuario.password = await bcrypt.hash(password, salt);
+      usuario.password = password;
     }
     
     if (rol) usuario.rol = rol;
@@ -268,15 +268,11 @@ const createUsuario = async (req, res) => {
       });
     }
     
-    // Hashear la contraseña
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
-    
-    // Crear el usuario
+    // Crear el usuario - No hasheamos la contraseña aquí porque el modelo lo hace automáticamente
     const nuevoUsuario = await Usuario.create({
       nombre,
       email,
-      password: hashedPassword,
+      password, // La contraseña se hasheará automáticamente en el hook beforeCreate
       rol: rol || 'usuario',
       codcli,
       nif,
