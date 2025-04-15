@@ -8,6 +8,7 @@ const ticketRoutes = require('./routes/ticket.routes');
 const userRoutes = require('./routes/user.routes');
 const loginRegistroRoutes = require('./routes/loginRegistro.routes');
 const archivoRoutes = require('./routes/archivo.routes');
+const clientRoutes = require('./routes/client.routes');
 const path = require('path');
 
 const app = express();
@@ -17,7 +18,7 @@ const PORT = process.env.PORT || 3000;
 app.use(cors({
   origin: '*', // Permitir cualquier origen
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'x-access-token']
 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -36,6 +37,7 @@ app.use('/api/tickets', ticketRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/login-registros', loginRegistroRoutes);
 app.use('/api/archivos', archivoRoutes);
+app.use('/api/clients', clientRoutes); // Rutas de clientes
 
 // Manejador de errores global
 app.use((err, req, res, next) => {
