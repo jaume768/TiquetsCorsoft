@@ -75,16 +75,6 @@ a:hover {
   transition: all 0.2s ease-in-out;
 }
 
-.btn-primary {
-  background-color: var(--primary-color);
-  border-color: var(--primary-color);
-}
-
-.btn-primary:hover {
-  background-color: #0a58ca;
-  border-color: #0a58ca;
-}
-
 .btn-outline-primary {
   color: var(--primary-color);
   border-color: var(--primary-color);
