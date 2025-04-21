@@ -80,7 +80,7 @@ npm start
 
 Para utilizar el login automático, acceda a la siguiente URL con el código de cliente:
 ```
-http://localhost/?codcli=0700&codigoSeguridad=111
+http://localhost/?codcli=0700&codigoSeguridad=111&usuario=NombreUsuario
 ```
 
 El sistema creará automáticamente un usuario asociado a este código de cliente si no existe.

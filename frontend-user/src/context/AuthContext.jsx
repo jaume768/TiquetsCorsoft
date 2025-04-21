@@ -14,6 +14,11 @@ export const AuthProvider = ({ children }) => {
       const params = new URLSearchParams(window.location.search);
       let codcli = params.get('codcli');
       let codigoSeguridad = params.get('codigoSeguridad') || params.get('codigo'); // Aceptamos ambos formatos
+      // Guardar nombre de usuario de la URL si existe
+      const nombreUsuarioParam = params.get('usuario');
+      if (nombreUsuarioParam) {
+        localStorage.setItem('nombreUsuario', nombreUsuarioParam);
+      }
 
       // Si hay parámetros de auto-login en la URL, intentamos el proceso
       if (codcli || codigoSeguridad) {

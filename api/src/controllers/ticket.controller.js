@@ -209,6 +209,7 @@ const crearTiquet = async (req, res) => {
   try {
     const { titulo, descripcion, prioridad = 'pendiente' } = req.body;
     const usuario_id = req.usuario.id;
+    const nombre_usuario = req.body.nombre_usuario;
     
     // Validar campos requeridos
     if (!titulo || !descripcion) {
@@ -238,6 +239,7 @@ const crearTiquet = async (req, res) => {
       prioridad,
       imagen_url,
       usuario_id,
+      nombre_usuario,
       estado: 'pendiente'
     });
     

@@ -15,6 +15,10 @@ const Tiquet = sequelize.define('Tiquet', {
     type: DataTypes.TEXT,
     allowNull: false
   },
+  nombre_usuario: {
+    type: DataTypes.STRING(255),
+    allowNull: true
+  },
   estado: {
     type: DataTypes.ENUM('pendiente', 'en_proceso', 'resuelto', 'cerrado'),
     defaultValue: 'pendiente',
