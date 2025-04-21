@@ -115,7 +115,7 @@ const ComentariosSection = ({ tiquetId, usuario }) => {
                       onClick={() => handleEliminarComentario(comentario.id)}
                       disabled={cargando}
                     >
-                      <span className="icon-trash">🗑️</span> Eliminar
+                      <span className="icon-trash"></span> Eliminar
                     </button>
                   </div>
                 )}

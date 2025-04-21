@@ -333,6 +333,7 @@ const DetalleTiquetPage = () => {
                         onChange={handleInputChange}
                         required
                       >
+                        <option value="pendiente">Pendiente</option>
                         <option value="baja">Baja</option>
                         <option value="media">Media</option>
                         <option value="alta">Alta</option>

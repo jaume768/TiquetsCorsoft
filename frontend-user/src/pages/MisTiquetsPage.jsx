@@ -237,7 +237,7 @@ const MisTiquetsPage = () => {
                     {ultimosTiquets.map(tiquet => (
                       <Link
                         to={`/tiquets/${tiquet.id}`}
-                        className="tiquet-card"
+                        className="tiquet-card-page"
                         key={tiquet.id}
                       >
                         <div className="tiquet-card-header">

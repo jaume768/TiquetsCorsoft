@@ -153,7 +153,7 @@ const ArchivosAdjuntos = ({ archivos, ticketId, onEliminar, refrescarArchivos })
                         {archivosCargando[archivo.id] ? (
                           <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                         ) : (
-                          <i className="fas fa-download"></i>
+                          <i className="icon icon-download"></i>
                         )}
                       </button>
                       <button 
@@ -161,7 +161,7 @@ const ArchivosAdjuntos = ({ archivos, ticketId, onEliminar, refrescarArchivos })
                         onClick={() => handleEliminar(archivo.id)}
                         disabled={cargando}
                       >
-                        <i className="fas fa-trash-alt"></i>
+                        <i className="icon icon-trash"></i>
                       </button>
                     </div>
                   </td>

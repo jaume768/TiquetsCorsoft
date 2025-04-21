@@ -100,6 +100,11 @@
   content: "\1F512"; /* Candado */
 }
 
+/* Icono de descarga */
+.icon-download::before {
+  content: "\2B07"; /* Flecha hacia abajo para descarga */
+}
+
 /* Estilos adicionales */
 .icon-spin {
   animation: spin 1.5s linear infinite;

@@ -454,7 +454,7 @@
   gap: 1.25rem;
 }
 
-.tiquet-card {
+.tiquet-card-page {
   display: flex;
   flex-direction: column;
   background-color: #fff;
