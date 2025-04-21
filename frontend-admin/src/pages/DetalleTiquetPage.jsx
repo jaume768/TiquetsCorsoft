@@ -273,6 +273,7 @@ const DetalleTiquetPage = () => {
                 <>
                   <div className="row mb-4">
                     <div className="col-md-6">
+                      <p><strong>Empresa:</strong> {tiquet.nombre_usuario || 'N/A'}</p>
                       <p>
                         <strong>Estado:</strong> 
                         <span className={`badge ${getEstadoLabel(tiquet.estado).className} ms-2`}>

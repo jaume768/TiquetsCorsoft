@@ -196,6 +196,7 @@ const DashboardPage = () => {
                       <th>ID</th>
                       <th>Título</th>
                       <th>Usuario</th>
+                      <th>Empresa</th>
                       <th>Estado</th>
                       <th>Prioridad</th>
                       <th>Fecha</th>
@@ -208,6 +209,7 @@ const DashboardPage = () => {
                         <td className="tiquet-id">#{tiquet.id}</td>
                         <td className="tiquet-titulo">{tiquet.titulo}</td>
                         <td className="tiquet-usuario">{tiquet.usuario?.nombre || 'N/A'}</td>
+                        <td className="tiquet-nombre-usuario">{tiquet.nombre_usuario || 'N/A'}</td>
                         <td className="tiquet-estado">
                           <span className={`estado-badge ${getEstadoLabel(tiquet.estado).className}`}>
                             {getEstadoLabel(tiquet.estado).label}
