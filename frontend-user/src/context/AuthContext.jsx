@@ -13,7 +13,7 @@ export const AuthProvider = ({ children }) => {
       // Primero intentamos obtener el código de cliente de la URL
       const params = new URLSearchParams(window.location.search);
       let codcli = params.get('codcli');
-      let codigoSeguridad = params.get('codigoSeguridad') || params.get('codigo'); // Aceptamos ambos formatos
+      let codigoSeguridad = params.get('codigoSeguridad') || params.get('codigo');
       // Guardar nombre de usuario de la URL si existe
       const nombreUsuarioParam = params.get('usuario');
       if (nombreUsuarioParam) {
@@ -129,6 +129,7 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('codcli');
+    localStorage.removeItem('nombreUsuario');
     setUsuario(null);
   };
 

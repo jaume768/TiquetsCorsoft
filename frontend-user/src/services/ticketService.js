@@ -41,7 +41,7 @@ const ticketService = {
     // Incluir nombre de usuario desde localStorage
     const nombreUsuario = localStorage.getItem('nombreUsuario');
     if (nombreUsuario) {
-      formData.append('nombreUsuario', nombreUsuario);
+      formData.append('nombre_usuario', nombreUsuario);
     }
     
     const response = await api.post('/tickets', formData, {
