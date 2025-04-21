@@ -9,6 +9,7 @@ const userRoutes = require('./routes/user.routes');
 const loginRegistroRoutes = require('./routes/loginRegistro.routes');
 const archivoRoutes = require('./routes/archivo.routes');
 const clientRoutes = require('./routes/client.routes');
+const aiRoutes = require('./routes/ai.routes');
 const path = require('path');
 
 const app = express();
@@ -33,6 +34,7 @@ app.get('/', (req, res) => {
 
 // Rutas
 app.use('/api/auth', authRoutes);
+app.use('/api/ai', aiRoutes);
 app.use('/api/tickets', ticketRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/login-registros', loginRegistroRoutes);

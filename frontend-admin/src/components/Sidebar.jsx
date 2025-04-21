@@ -81,6 +81,12 @@ const Sidebar = ({ onToggle, isCollapsed }) => {
               {!isCollapsed && <span className="sidebar-menu-text">Actualizar clientes</span>}
             </NavLink>
           </li>
+          <li className="sidebar-menu-item">
+            <NavLink to="/chat-sql" className={({isActive}) => `sidebar-menu-link ${isActive ? 'active' : ''}`}>
+              <i className="icon icon-chat sidebar-menu-icon"></i>
+              {!isCollapsed && <span className="sidebar-menu-text">SQL AI Chat</span>}
+            </NavLink>
+          </li>
         </ul>
       </nav>
       

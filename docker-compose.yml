@@ -39,6 +39,7 @@ services:
       - SMTP_PORT=587
       - SMTP_USER=your_email@example.com
       - SMTP_PASS=your_email_password
+      - OPENAI_API_KEY=your_openai_api_key
       - ADMIN_EMAIL=admin@example.com
     ports:
       - "3000:3000"

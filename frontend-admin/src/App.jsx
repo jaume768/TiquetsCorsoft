@@ -11,6 +11,7 @@ import DetalleTiquetPage from './pages/DetalleTiquetPage';
 import UsuariosPage from './pages/UsuariosPage';
 import LoginRegistrosPage from './pages/LoginRegistrosPage';
 import ClientsPage from './pages/ClientsPage';
+import ChatSQLPage from './pages/ChatSQLPage';
 import NotFoundPage from './pages/NotFoundPage';
 // Estilos propios sin dependencias de Bootstrap
 import './styles/main.css';
@@ -68,6 +69,13 @@ function App() {
             <ProtectedRoute>
               <Layout>
                 <ClientsPage />
+              </Layout>
+            </ProtectedRoute>
+          } />
+          <Route path="/chat-sql" element={
+            <ProtectedRoute>
+              <Layout>
+                <ChatSQLPage />
               </Layout>
             </ProtectedRoute>
           } />
