@@ -19,7 +19,7 @@ router.post('/query-sql', [verificarToken, esAdmin], async (req, res) => {
     // Generate SQL via OpenAI SDK with DB context
     const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
     const messages = [
-      { role: 'system', content: `You are a SQL assistant with access to the following database schema:\n${schemaDescription}\nGiven a natural language request, return only the SQL query.` },
+      { role: 'system', content: `You are a SQL assistant with access to the following database schema:\n${schemaDescription}\nGiven a natural language request, return only the SQL query. DB_name: tiquets_db` },
       { role: 'user', content: prompt }
     ];
     const completion = await openai.chat.completions.create({ model: 'gpt-3.5-turbo', messages, temperature: 0 });
