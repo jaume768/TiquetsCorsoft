@@ -19,7 +19,7 @@ router.post('/query-sql', [verificarToken, esAdmin], async (req, res) => {
     // Generate SQL via OpenAI SDK with DB context
     const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
     const messages = [
-      { role: 'system', content: `You are a SQL assistant with access to the following database schema:\n${schemaDescription}\nGiven a natural language request, return only the SQL query. DB_name: tiquets_db` },
+      { role: 'system', content: `You are a SQL assistant with access to the following database schema:\n${schemaDescription}\nGiven a natural language request, return only the SQL query.` },
       { role: 'user', content: prompt }
     ];
     const completion = await openai.chat.completions.create({ model: 'gpt-3.5-turbo', messages, temperature: 0 });
@@ -31,7 +31,7 @@ router.post('/query-sql', [verificarToken, esAdmin], async (req, res) => {
       { role: 'system', content: 'Eres un asistente útil. Dada una consulta SQL y su conjunto de resultados, proporciona una explicación concisa en español y presenta los datos en una tabla Markdown.' },
       { role: 'user', content: `SQL Query: ${sqlQuery}\nResult: ${JSON.stringify(rows)}` }
     ];
-    const interpretCompletion = await openai.chat.completions.create({ model: 'gpt-4o-mini', messages: interpretMessages, temperature: 0 });
+    const interpretCompletion = await openai.chat.completions.create({ model: 'gpt-3.5-turbo', messages: interpretMessages, temperature: 0 });
     const naturalAnswer = interpretCompletion.choices[0].message.content.trim();
     res.json({ success: true, sql: sqlQuery, answer: naturalAnswer, rows });
   } catch (error) {

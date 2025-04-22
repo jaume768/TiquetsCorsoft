@@ -42,9 +42,10 @@ services:
       - ADMIN_EMAIL=admin@example.com
     ports:
       - "3000:3000"
+    # Temporalmente quitamos los volúmenes de código, pero mantenemos uploads
     volumes:
-      - ./api:/app
-      - /app/node_modules
+    #   - ./api:/app
+    #   - /app/node_modules
       - ./uploads:/app/uploads
     networks:
       - tiquets-network

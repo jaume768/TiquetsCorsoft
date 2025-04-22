@@ -31,7 +31,9 @@ RUN apt-get update && apt-get install -y \
   rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
-COPY package*.json ./
+COPY package.json ./
+# If package-lock.json exists, it won't be copied, ensuring fresh install per package.json
 RUN npm install
+RUN npm install openai@4.4.0 --no-save
 COPY . .
 CMD ["node", "src/index.js"]
