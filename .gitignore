@@ -1,3 +1,4 @@
 db/data/
 mysql-data/
 uploads
+.env

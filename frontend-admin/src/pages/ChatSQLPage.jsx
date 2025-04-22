@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import api from '../services/api';
 import '../styles/ChatSQLPage.css';
 
@@ -14,7 +16,7 @@ export default function ChatSQLPage() {
     try {
       const { data } = await api.post('/ai/query-sql', { prompt });
       if (data.success) {
-        setChat(c => [...c, { from: 'ai', text: data.answer }]);
+        setChat(c => [...c, { from: 'ai', text: typeof data.answer === 'object' ? JSON.stringify(data.answer, null, 2) : data.answer }]);
       } else {
         setChat(c => [...c, { from: 'ai', text: `Error: ${data.error}` }]);
       }
@@ -35,7 +37,9 @@ export default function ChatSQLPage() {
       <div className="chat-window">
         {chat.map((m, i) => (
           <div key={i} className={`message ${m.from}`}>
-            <span>{m.text}</span>
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+              {m.text}
+            </ReactMarkdown>
           </div>
         ))}
       </div>
