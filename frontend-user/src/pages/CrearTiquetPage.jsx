@@ -1,438 +1,348 @@
-import React, { useState, useContext, useRef } from 'react';
+import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { showSuccess, showError, showWarning } from '../components/Notification';
+import { showSuccess, showError } from '../components/Notification';
 import ticketService from '../services/ticketService';
 import AuthContext from '../context/AuthContext';
-import Header from '../components/Header';
 import emailjs from '@emailjs/browser';
+import {
+  FaUpload,
+  FaFilePdf,
+  FaFileWord,
+  FaFileAlt,
+  FaFileArchive,
+  FaFile,
+  FaTrashAlt,
+  FaPaperPlane,
+  FaTicketAlt
+} from 'react-icons/fa';
 import '../styles/CrearTiquetPage.css';
 
 const CrearTiquetPage = () => {
   const navigate = useNavigate();
   const { usuario } = useContext(AuthContext);
-  
-  const [formulario, setFormulario] = useState({
+
+  const [form, setForm] = useState({
     titulo: '',
     descripcion: '',
     tipo: 'incidencia',
     prioridad: 'pendiente',
-    imagenes: []
+    archivos: []
   });
-  
-  const [errores, setErrores] = useState({});
-  const [cargando, setCargando] = useState(false);
+  const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(false);
   const [previews, setPreviews] = useState([]);
-  
-  const tiposTiquet = [
+
+  const tipos = [
     { value: 'incidencia', label: 'Incidencia' },
     { value: 'consulta', label: 'Consulta' },
     { value: 'mejora', label: 'Solicitud de Mejora' },
     { value: 'otro', label: 'Otro' }
   ];
-  
-  const tiposArchivosPermitidos = [
-    'image/jpeg', 'image/png', 'image/gif', 
-    'application/pdf', 'application/msword', 
+
+  const tiposPermitidos = [
+    'image/jpeg', 'image/png', 'image/gif',
+    'application/pdf', 'application/msword',
     'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
     'text/plain', 'application/zip'
   ];
-  
-  // La prioridad se establece por defecto como 'media' y no se permite al usuario modificarla
-  
-  const handleInputChange = (e) => {
+
+  const handleChange = e => {
     const { name, value } = e.target;
-    setFormulario({
-      ...formulario,
-      [name]: value
-    });
-    
-    // Limpiar error al modificar el campo
-    if (errores[name]) {
-      setErrores({
-        ...errores,
-        [name]: null
-      });
+    setForm(prev => ({ ...prev, [name]: value }));
+    if (errors[name]) {
+      setErrors(prev => ({ ...prev, [name]: null }));
     }
   };
-  
-  const handleImagenesChange = (e) => {
-    const archivos = Array.from(e.target.files);
-    
-    // Validar tamaño y tipo de archivo
-    const archivosFiltrados = archivos.filter(archivo => {
-      // Limitar a 2MB por archivo
-      if (archivo.size > 2 * 1024 * 1024) {
-        showError(`El archivo ${archivo.name} supera el límite de 2MB`);
+
+  const handleFiles = e => {
+    const files = Array.from(e.target.files);
+    const validos = files.filter(file => {
+      if (file.size > 2 * 1024 * 1024) {
+        showError(`El archivo ${file.name} supera 2MB`);
         return false;
       }
-      
-      // Validar tipo de archivo
-      if (!tiposArchivosPermitidos.includes(archivo.type)) {
-        showError(`El tipo de archivo ${archivo.name} no está permitido`);
+      if (!tiposPermitidos.includes(file.type)) {
+        showError(`Tipo no permitido: ${file.name}`);
         return false;
       }
-      
       return true;
     });
-    
-    // Generar previsualizaciones para archivos
-    const nuevasPreviews = archivosFiltrados.map(archivo => {
-      if (archivo.type.startsWith('image/')) {
-        return {
-          nombre: archivo.name,
-          tipo: archivo.type,
-          url: URL.createObjectURL(archivo),
-          esImagen: true,
-          esPdf: false,
-          esDocumento: false
-        };
-      } else if (archivo.type === 'application/pdf') {
-        return {
-          nombre: archivo.name,
-          tipo: archivo.type,
-          url: null,
-          esImagen: false,
-          esPdf: true,
-          esDocumento: false
-        };
-      } else {
-        // Para otros tipos de documentos
-        return {
-          nombre: archivo.name,
-          tipo: archivo.type,
-          url: null,
-          esImagen: false,
-          esPdf: false,
-          esDocumento: true
-        };
-      }
-    });
-    
-    setFormulario({
-      ...formulario,
-      imagenes: [...formulario.imagenes, ...archivosFiltrados]
-    });
-    
-    setPreviews([...previews, ...nuevasPreviews]);
-  };
-  
-  const eliminarImagen = (index) => {
-    // Liberar URL.createObjectURL
-    if (previews[index].url) {
-      URL.revokeObjectURL(previews[index].url);
-    }
-    
-    const nuevasImagenes = [...formulario.imagenes];
-    nuevasImagenes.splice(index, 1);
-    
-    const nuevasPreviews = [...previews];
-    nuevasPreviews.splice(index, 1);
-    
-    setFormulario({
-      ...formulario,
-      imagenes: nuevasImagenes
-    });
-    
-    setPreviews(nuevasPreviews);
-  };
-  
-  const validarFormulario = () => {
-    const nuevosErrores = {};
-    
-    if (!formulario.titulo.trim()) {
-      nuevosErrores.titulo = 'El título es obligatorio';
-    } else if (formulario.titulo.length < 5) {
-      nuevosErrores.titulo = 'El título debe tener al menos 5 caracteres';
-    }
-    
-    if (!formulario.descripcion.trim()) {
-      nuevosErrores.descripcion = 'La descripción es obligatoria';
-    } else if (formulario.descripcion.length < 10) {
-      nuevosErrores.descripcion = 'La descripción debe tener al menos 10 caracteres';
-    }
-    
-    setErrores(nuevosErrores);
-    return Object.keys(nuevosErrores).length === 0;
-  };
-  
-  // Función para enviar email a través de EmailJS
-  const enviarEmailNotificacion = async (ticket) => {
-    // Verificar si los emails están habilitados en la configuración
-    const emailsEnabled = process.env.REACT_APP_ENABLE_EMAILS === 'true';
-    
-    if (!emailsEnabled) {
-      console.log('Envío de emails deshabilitado en modo desarrollo.');
-      return;
-    }
 
-    try {
-      // Configuración de EmailJS usando variables de entorno
-      const serviceId = process.env.REACT_APP_EMAILJS_SERVICE_ID;
-      const templateId = process.env.REACT_APP_EMAILJS_TEMPLATE_ID;
-      const publicKey = process.env.REACT_APP_EMAILJS_PUBLIC_KEY;
-      const adminEmail = process.env.REACT_APP_ADMIN_EMAIL;
-      
-      // Verificar que las variables de entorno estén configuradas
-      if (!serviceId || !templateId || !publicKey) {
-        console.error('Falta configuración de EmailJS en variables de entorno');
-        return;
-      }
-      
-      // Datos para la plantilla de EmailJS
-      const templateParams = {
-        to_email: adminEmail || 'admin@ejemplo.com',
-        ticket_id: ticket.id,
-        user_name: usuario.nombre || 'Usuario',
-        user_email: usuario.email || 'No disponible',
-        ticket_title: ticket.titulo,
-        ticket_description: ticket.descripcion,
-        ticket_type: ticket.tipo,
-        ticket_priority: ticket.prioridad,
-        ticket_date: new Date().toLocaleString()
+    const nuevosPreviews = validos.map(file => {
+      const isImg = file.type.startsWith('image/');
+      return {
+        nombre: file.name,
+        tipo: file.type,
+        url: isImg ? URL.createObjectURL(file) : null,
+        esImagen: isImg,
+        esPdf: file.type === 'application/pdf',
+        esDoc: /word|plain/.test(file.type),
+        esZip: file.type === 'application/zip'
       };
-      
-      // Enviar el email
-      const response = await emailjs.send(serviceId, templateId, templateParams, publicKey);
-      console.log('Email enviado con éxito:', response.status, response.text);
-    } catch (error) {
-      console.error('Error al enviar email de notificación:', error);
-      // No mostrar error al usuario, pues el ticket ya se creó correctamente
+    });
+
+    setForm(prev => ({
+      ...prev,
+      archivos: [...prev.archivos, ...validos]
+    }));
+    setPreviews(prev => [...prev, ...nuevosPreviews]);
+  };
+
+  const removePreview = index => {
+    const pv = previews[index];
+    if (pv.url) URL.revokeObjectURL(pv.url);
+
+    setForm(prev => {
+      const archivos = [...prev.archivos];
+      archivos.splice(index, 1);
+      return { ...prev, archivos };
+    });
+    setPreviews(prev => {
+      const arr = [...prev];
+      arr.splice(index, 1);
+      return arr;
+    });
+  };
+
+  const validate = () => {
+    const errs = {};
+    if (!form.titulo.trim()) {
+      errs.titulo = 'Título obligatorio';
+    } else if (form.titulo.length < 5) {
+      errs.titulo = 'Mínimo 5 caracteres';
+    }
+    if (!form.descripcion.trim()) {
+      errs.descripcion = 'Descripción obligatoria';
+    } else if (form.descripcion.length < 10) {
+      errs.descripcion = 'Mínimo 10 caracteres';
+    }
+    setErrors(errs);
+    return Object.keys(errs).length === 0;
+  };
+
+  const sendEmail = async ticket => {
+    if (process.env.REACT_APP_ENABLE_EMAILS !== 'true') return;
+    try {
+      const {
+        REACT_APP_EMAILJS_SERVICE_ID: svc,
+        REACT_APP_EMAILJS_TEMPLATE_ID: tpl,
+        REACT_APP_EMAILJS_PUBLIC_KEY: key,
+        REACT_APP_ADMIN_EMAIL: admin
+      } = process.env;
+      if (!svc || !tpl || !key) return;
+
+      await emailjs.send(
+        svc,
+        tpl,
+        {
+          to_email: admin,
+          ticket_id: ticket.id,
+          user_name: usuario.nombre,
+          user_email: usuario.email,
+          ticket_title: ticket.titulo,
+          ticket_description: ticket.descripcion,
+          ticket_type: ticket.tipo,
+          ticket_priority: ticket.prioridad,
+          ticket_date: new Date().toLocaleString()
+        },
+        key
+      );
+    } catch (err) {
+      console.error('Error enviando email:', err);
     }
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
-    
-    if (!validarFormulario()) {
-      return;
-    }
-    
+    if (!validate()) return;
+
+    setLoading(true);
     try {
-      setCargando(true);
-      
-      // Crear FormData para enviar archivos
       const formData = new FormData();
-      formData.append('titulo', formulario.titulo);
-      formData.append('descripcion', formulario.descripcion);
-      formData.append('tipo', formulario.tipo);
-      formData.append('prioridad', formulario.prioridad);
-      
-      // Agregar archivos si existen
-      if (formulario.imagenes.length > 0) {
-        formulario.imagenes.forEach(archivo => {
-          formData.append('archivos', archivo);
-        });
+      formData.append('titulo', form.titulo);
+      formData.append('descripcion', form.descripcion);
+      formData.append('tipo', form.tipo);
+      formData.append('prioridad', form.prioridad);
+      form.archivos.forEach(file => formData.append('archivos', file));
+
+      const res = await ticketService.crearTiquet(formData);
+
+      // liberar previews
+      previews.forEach(p => p.url && URL.revokeObjectURL(p.url));
+
+      if (res.data?.id) {
+        await sendEmail(res.data);
+        showSuccess('¡Ticket creado con éxito!');
+        navigate(`/tiquets/${res.data.id}`);
       }
-      
-      const response = await ticketService.crearTiquet(formData);
-      
-      // Limpiar URLs creadas para previsualizaciones
-      previews.forEach(preview => {
-        if (preview.url) {
-          URL.revokeObjectURL(preview.url);
-        }
-      });
-      
-      // Enviar email de notificación usando EmailJS
-      if (response.data && response.data.id) {
-        await enviarEmailNotificacion(response.data);
-      }
-      
-      showSuccess('¡Ticket creado con éxito!');
-      navigate(`/tiquets/${response.data.id}`);
-    } catch (error) {
-      console.error('Error al crear ticket:', error);
-      
-      if (error.response && error.response.data && error.response.data.message) {
-        showError(`Error: ${error.response.data.message}`);
-      } else {
-        showError('Ocurrió un error al crear el ticket. Por favor, intente nuevamente más tarde.');
-      }
+    } catch (err) {
+      console.error(err);
+      showError(err.response?.data?.message || 'Error al crear ticket');
     } finally {
-      setCargando(false);
+      setLoading(false);
     }
   };
-  
+
   return (
     <div className="crear-tiquet-page">
-      <div className="container">
-        <div className="row justify-content-center">
-          <div className="col-lg-8">
-            <div className="crear-tiquet-card">
-              <div className="crear-tiquet-header">
-                <h1 className="crear-tiquet-title">Crear Nuevo Ticket</h1>
-                <p className="crear-tiquet-subtitle">
-                  Complete el formulario para enviar su solicitud de soporte
-                </p>
+      <div className="crear-tiquet-card">
+        <div className="crear-tiquet-header">
+          <FaTicketAlt className="header-icon" />
+          <h1 className="crear-tiquet-title">Crear Nuevo Ticket</h1>
+          <p className="crear-tiquet-subtitle">
+            Complete el formulario para enviar su solicitud de soporte
+          </p>
+        </div>
+
+        <form className="crear-tiquet-form" onSubmit={handleSubmit}>
+          <div className="form-group">
+            <label htmlFor="titulo">
+              Título <span className="campo-requerido">*</span>
+            </label>
+            <input
+              id="titulo"
+              name="titulo"
+              type="text"
+              className={`form-control ${errors.titulo ? 'is-invalid' : ''}`}
+              placeholder="Resumen breve de su solicitud"
+              value={form.titulo}
+              onChange={handleChange}
+              disabled={loading}
+            />
+            {errors.titulo && (
+              <div className="invalid-feedback">{errors.titulo}</div>
+            )}
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="descripcion">
+              Descripción <span className="campo-requerido">*</span>
+            </label>
+            <textarea
+              id="descripcion"
+              name="descripcion"
+              rows="6"
+              className={`form-control ${errors.descripcion ? 'is-invalid' : ''
+                }`}
+              placeholder="Describa detalladamente su solicitud, problema o consulta"
+              value={form.descripcion}
+              onChange={handleChange}
+              disabled={loading}
+            ></textarea>
+            {errors.descripcion && (
+              <div className="invalid-feedback">{errors.descripcion}</div>
+            )}
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="tipo">Tipo de Ticket</label>
+            <select
+              id="tipo"
+              name="tipo"
+              className="form-control"
+              value={form.tipo}
+              onChange={handleChange}
+              disabled={loading}
+            >
+              {tipos.map(t => (
+                <option key={t.value} value={t.value}>
+                  {t.label}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="archivos">
+              Adjuntar archivo <small>(opcional)</small>
+            </label>
+            <div className="file-upload-container">
+              <input
+                id="archivos"
+                type="file"
+                multiple
+                accept={tiposPermitidos.join(',')}
+                className="file-upload-input"
+                onChange={handleFiles}
+                disabled={loading || previews.length >= 5}
+              />
+              <div className="file-upload-button">
+                <FaUpload className="icon-upload" />
+                <span>Seleccionar archivo</span>
               </div>
-              
-              <form className="crear-tiquet-form" onSubmit={handleSubmit}>
-                <div className="form-group">
-                  <label htmlFor="titulo">Título <span className="campo-requerido">*</span></label>
-                  <input
-                    type="text"
-                    id="titulo"
-                    name="titulo"
-                    className={`form-control ${errores.titulo ? 'is-invalid' : ''}`}
-                    value={formulario.titulo}
-                    onChange={handleInputChange}
-                    placeholder="Resumen breve de su solicitud"
-                    disabled={cargando}
-                  />
-                  {errores.titulo && <div className="invalid-feedback">{errores.titulo}</div>}
-                </div>
-                
-                <div className="form-group">
-                  <label htmlFor="descripcion">Descripción <span className="campo-requerido">*</span></label>
-                  <textarea
-                    id="descripcion"
-                    name="descripcion"
-                    className={`form-control ${errores.descripcion ? 'is-invalid' : ''}`}
-                    value={formulario.descripcion}
-                    onChange={handleInputChange}
-                    placeholder="Describa detalladamente su solicitud, problema o consulta"
-                    rows="6"
-                    disabled={cargando}
-                  ></textarea>
-                  {errores.descripcion && <div className="invalid-feedback">{errores.descripcion}</div>}
-                </div>
-                
-                <div className="form-row">
-                  <div className="form-group form-group-half">
-                    <label htmlFor="tipo">Tipo de Ticket</label>
-                    <select
-                      id="tipo"
-                      name="tipo"
-                      className="form-control"
-                      value={formulario.tipo}
-                      onChange={handleInputChange}
-                      disabled={cargando}
-                    >
-                      {tiposTiquet.map(tipo => (
-                        <option key={tipo.value} value={tipo.value}>
-                          {tipo.label}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  
-                  {/* La selección de prioridad ha sido eliminada - se establece automáticamente como 'media' */}
-                </div>
-                
-                <div className="form-group">
-                  <label htmlFor="imagenes">Adjuntos (máx. 5 archivos, 2MB c/u)</label>
-                  <div className="file-upload-container">
-                    <input
-                      type="file"
-                      id="imagenes"
-                      name="imagenes"
-                      className="file-upload-input"
-                      onChange={handleImagenesChange}
-                      multiple
-                      accept="image/jpeg,image/png,image/gif,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain,application/zip"
-                      disabled={cargando || previews.length >= 5}
-                    />
-                    <div className="file-upload-button">
-                      <span className="icon-upload">⬆️</span>
-                      <span>Seleccionar archivos</span>
-                    </div>
-                    <p className="file-upload-info">
-                      {previews.length >= 5 ? (
-                        <span className="text-warning">Límite de archivos alcanzado (5)</span>
-                      ) : (
-                        `Arrastre aquí o haga clic para seleccionar ${5 - previews.length} archivo(s)`
-                      )}
-                    </p>
-                  </div>
-                </div>
-                
-                {previews.length > 0 && (
-                  <div className="archivos-preview">
-                    <h5>Archivos adjuntos ({previews.length})</h5>
-                    <div className="archivos-grid">
-                      {previews.map((preview, index) => (
-                        <div className="archivo-item" key={index}>
-                          <div className="archivo-preview">
-                            {preview.esImagen ? (
-                              <img src={preview.url} alt={`Vista previa ${index + 1}`} />
-                            ) : preview.esPdf ? (
-                              <span className="icon-pdf">
-                                <i className="far fa-file-pdf"></i>
-                                PDF
-                              </span>
-                            ) : preview.tipo.includes('word') ? (
-                              <span className="icon-doc">
-                                <i className="far fa-file-word"></i>
-                                DOC
-                              </span>
-                            ) : preview.tipo.includes('text/plain') ? (
-                              <span className="icon-txt">
-                                <i className="far fa-file-alt"></i>
-                                TXT
-                              </span>
-                            ) : preview.tipo.includes('zip') ? (
-                              <span className="icon-zip">
-                                <i className="far fa-file-archive"></i>
-                                ZIP
-                              </span>
-                            ) : (
-                              <span className="icon-file">
-                                <i className="far fa-file"></i>
-                                Archivo
-                              </span>
-                            )}
-                          </div>
-                          <div className="archivo-info">
-                            <span className="archivo-nombre" title={preview.nombre}>
-                              {preview.nombre.length > 20 ? preview.nombre.substring(0, 17) + '...' : preview.nombre}
-                            </span>
-                            <span className="archivo-tipo">{preview.tipo.split('/')[1]}</span>
-                            <button 
-                              type="button" 
-                              className="archivo-eliminar"
-                              onClick={() => eliminarImagen(index)}
-                              disabled={cargando}
-                            >
-                              <span className="icon-remove">❌</span>
-                            </button>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-                
-                <div className="form-actions">
-                  <button
-                    type="button"
-                    className="btn-cancelar"
-                    onClick={() => navigate('/mis-tiquets')}
-                    disabled={cargando}
-                  >
-                    Cancelar
-                  </button>
-                  <button
-                    type="submit"
-                    className="btn-crear"
-                    disabled={cargando}
-                  >
-                    {cargando ? (
-                      <>
-                        <div className="loading-spinner-small"></div>
-                        <span className="ms-2">Creando...</span>
-                      </>
-                    ) : (
-                      <>
-                        <span className="icon-send">📩</span>
-                        <span>Crear Ticket</span>
-                      </>
-                    )}
-                  </button>
-                </div>
-              </form>
             </div>
           </div>
-        </div>
+
+          {previews.length > 0 && (
+            <div className="archivos-preview">
+              <h5>Archivos adjuntos ({previews.length})</h5>
+              <div className="archivos-grid">
+                {previews.map((p, i) => (
+                  <div className="archivo-item" key={i}>
+                    <div className="archivo-preview">
+                      {p.esImagen ? (
+                        <img src={p.url} alt={p.nombre} />
+                      ) : p.esPdf ? (
+                        <span className="icon-pdf">
+                          <FaFilePdf /> PDF
+                        </span>
+                      ) : p.esDoc ? (
+                        <span className="icon-doc">
+                          <FaFileWord /> DOC
+                        </span>
+                      ) : p.esZip ? (
+                        <span className="icon-zip">
+                          <FaFileArchive /> ZIP
+                        </span>
+                      ) : (
+                        <span className="icon-file">
+                          <FaFile /> Archivo
+                        </span>
+                      )}
+                    </div>
+                    <div className="archivo-info">
+                      <span className="archivo-nombre" title={p.nombre}>
+                        {p.nombre}
+                      </span>
+                      <button
+                        type="button"
+                        className="archivo-eliminar"
+                        onClick={() => removePreview(i)}
+                        disabled={loading}
+                      >
+                        <FaTrashAlt />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <div className="form-actions">
+            <button
+              type="button"
+              className="btn-cancelar"
+              onClick={() => navigate('/mis-tiquets')}
+              disabled={loading}
+            >
+              Cancelar
+            </button>
+            <button
+              type="submit"
+              className="btn-submit"
+              disabled={loading}
+            >
+              {loading ? (
+                'Creando...'
+              ) : (
+                <>
+                  <FaPaperPlane /> Enviar
+                </>
+              )}
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   );

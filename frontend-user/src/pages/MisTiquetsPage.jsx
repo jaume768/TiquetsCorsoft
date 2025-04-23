@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import AuthContext from '../context/AuthContext';
 import ticketService from '../services/ticketService';
 import Header from '../components/Header';
+import { FaPlus, FaTimesCircle, FaExclamationTriangle, FaTicketAlt, FaComments } from 'react-icons/fa';
 import '../styles/MisTiquetsPage.css';
 
 const MisTiquetsPage = () => {
@@ -127,9 +128,10 @@ const MisTiquetsPage = () => {
       <main className="main-content">
         <div className="container">
           <div className="page-header">
+            <FaTicketAlt className="page-icon" />
             <h2 className="page-title">Mis Tickets</h2>
             <Link to="/tiquets/nuevo" className="btn-nuevo-tiquet">
-              <span className="icon-plus">➕</span> Nuevo Ticket
+              <FaPlus className="icon-modern" /> Nuevo Ticket
             </Link>
           </div>
           
@@ -182,7 +184,7 @@ const MisTiquetsPage = () => {
                       cargarTiquets();
                     }}
                   >
-                    <span className="icon-x-circle">❌</span> Limpiar filtros
+                    <FaTimesCircle className="icon-modern" /> Limpiar filtros
                   </button>
                 </div>
               </div>
@@ -191,7 +193,7 @@ const MisTiquetsPage = () => {
           
           {error && (
             <div className="error-alert">
-              <span className="icon-alert">⚠️</span>
+              <FaExclamationTriangle className="icon-modern" />
               <span>{error}</span>
             </div>
           )}
@@ -207,7 +209,7 @@ const MisTiquetsPage = () => {
             ) : tiquets.length === 0 ? (
               <div className="no-tiquets">
                 <div className="no-tiquets-icon">
-                  <span className="icon-ticket-large">🎟️</span>
+                  <FaTicketAlt className="icon-modern ticket-large" />
                 </div>
                 <h3 className="no-tiquets-title">No tiene tickets</h3>
                 <p className="no-tiquets-message">
@@ -225,7 +227,7 @@ const MisTiquetsPage = () => {
                   </button>
                 )}
                 <Link to="/tiquets/nuevo" className="no-tiquets-action-btn">
-                  <span className="icon-plus">➕</span> Crear nuevo ticket
+                  <FaPlus className="icon-modern" /> Crear nuevo ticket
                 </Link>
               </div>
             ) : (
@@ -264,7 +266,7 @@ const MisTiquetsPage = () => {
                             </span>
                           </div>
                           <div className="tiquet-comentarios">
-                            <span className="icon-comments">💬</span>
+                            <FaComments className="icon-modern" />
                             <span>{tiquet.num_comentarios || 0}</span>
                           </div>
                         </div>

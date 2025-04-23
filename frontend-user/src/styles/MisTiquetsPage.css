@@ -733,3 +733,14 @@
     justify-content: flex-start;
   }
 }
+
+/* Modern icon styles */
+.icon-modern {
+  color: #fff;
+  font-size: 1.2rem;
+  vertical-align: middle;
+  margin-right: 0.5rem;
+}
+.icon-modern.ticket-large {
+  font-size: 3.5rem;
+}
