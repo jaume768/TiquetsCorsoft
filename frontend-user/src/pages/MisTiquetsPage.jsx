@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import AuthContext from '../context/AuthContext';
 import ticketService from '../services/ticketService';
 import Header from '../components/Header';
-import { FaPlus, FaTimesCircle, FaExclamationTriangle, FaTicketAlt, FaComments } from 'react-icons/fa';
+import { FaPlus, FaTimesCircle, FaExclamationTriangle, FaTicketAlt, FaComments, FaSearch } from 'react-icons/fa';
 import '../styles/MisTiquetsPage.css';
 
 const MisTiquetsPage = () => {
@@ -22,10 +22,10 @@ const MisTiquetsPage = () => {
     cargarTiquets();
   }, []);
   
-  const cargarTiquets = async () => {
+  const cargarTiquets = async (useFiltros = filtros) => {
     try {
       setCargando(true);
-      const response = await ticketService.getMisTiquets(filtros);
+      const response = await ticketService.getMisTiquets(useFiltros);
       setTiquets(response.data);
       
       // Obtener los 4 últimos tickets para mostrar como tarjetas
@@ -45,10 +45,9 @@ const MisTiquetsPage = () => {
   
   const handleFiltroChange = (e) => {
     const { name, value } = e.target;
-    setFiltros({
-      ...filtros,
-      [name]: value
-    });
+    const nuevosFiltros = { ...filtros, [name]: value };
+    setFiltros(nuevosFiltros);
+    cargarTiquets(nuevosFiltros);
   };
   
   const handleBusquedaChange = (e) => {
@@ -176,6 +175,9 @@ const MisTiquetsPage = () => {
                 </div>
                 
                 <div className="filtro-actions">
+                  <button type="button" className="buscar-button" onClick={() => cargarTiquets()}>
+                    <FaSearch className="icon-modern" /> Buscar
+                  </button>
                   <button
                     type="button"
                     className="reset-button"
@@ -264,10 +266,6 @@ const MisTiquetsPage = () => {
                                 minute: '2-digit'
                               })}
                             </span>
-                          </div>
-                          <div className="tiquet-comentarios">
-                            <FaComments className="icon-modern" />
-                            <span>{tiquet.num_comentarios || 0}</span>
                           </div>
                         </div>
                       </Link>

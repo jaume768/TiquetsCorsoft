@@ -313,9 +313,9 @@
 }
 
 .reset-button {
-  background-color: transparent;
+  background-color: red;
   border: none;
-  color: #6c757d;
+  color: white;
   cursor: pointer;
   padding: 0.5rem 0.75rem;
   font-size: 0.875rem;
@@ -326,7 +326,7 @@
 }
 
 .reset-button:hover {
-  color: #dc3545;
+  color: black;
 }
 
 /* Alerta de error */
@@ -465,11 +465,6 @@
   text-decoration: none;
   color: inherit;
   height: 100%;
-}
-
-.tiquet-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
 }
 
 .tiquet-card-header {
