@@ -1,5 +1,5 @@
 -- Creación de la base de datos
-CREATE DATABASE IF NOT EXISTS tiquets_db;
+CREATE DATABASE IF NOT EXISTS tiquets_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE tiquets_db;
 
 -- Tabla de usuarios
@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS usuarios (
     rol ENUM('usuario', 'admin') NOT NULL DEFAULT 'usuario',
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     fecha_actualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-);
+) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- Tabla de tiquets
 CREATE TABLE IF NOT EXISTS tiquets (
@@ -28,7 +28,7 @@ CREATE TABLE IF NOT EXISTS tiquets (
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     fecha_actualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
-);
+) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- Tabla de archivos adjuntos
 CREATE TABLE IF NOT EXISTS archivos_tickets (
@@ -41,7 +41,7 @@ CREATE TABLE IF NOT EXISTS archivos_tickets (
     ruta VARCHAR(255) NOT NULL,
     fecha_subida TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (ticket_id) REFERENCES tiquets(id) ON DELETE CASCADE
-);
+) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- Tabla de comentarios de tiquets
 CREATE TABLE IF NOT EXISTS comentarios_tiquets (
@@ -52,7 +52,7 @@ CREATE TABLE IF NOT EXISTS comentarios_tiquets (
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (tiquet_id) REFERENCES tiquets(id) ON DELETE CASCADE,
     FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
-);
+) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- Tabla de historial/logs (opcional)
 CREATE TABLE IF NOT EXISTS historial_tiquets (
@@ -65,7 +65,7 @@ CREATE TABLE IF NOT EXISTS historial_tiquets (
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (tiquet_id) REFERENCES tiquets(id) ON DELETE CASCADE,
     FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
-);
+) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- Tabla de registros de login
 CREATE TABLE IF NOT EXISTS login_registros (
@@ -76,7 +76,7 @@ CREATE TABLE IF NOT EXISTS login_registros (
     user_agent TEXT DEFAULT NULL,
     metodo_login VARCHAR(50) DEFAULT NULL,
     FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
-);
+) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- Crear usuario administrador por defecto
 INSERT INTO usuarios (nombre, email, password, rol) 
