@@ -39,10 +39,31 @@ const ticketService = {
     return response.data;
   },
   
-  // Añadir comentario a un tiquet
-  agregarComentario: async (tiquetId, texto) => {
-    const response = await api.post(`/tickets/${tiquetId}/comentarios`, { texto });
-    return response.data;
+  // Añadir comentario a un tiquet con archivos adjuntos opcionales
+  agregarComentario: async (tiquetId, texto, archivos = null) => {
+    let formData = null;
+    
+    // Si hay archivos adjuntos, usamos FormData
+    if (archivos && archivos.length > 0) {
+      formData = new FormData();
+      formData.append('texto', texto);
+      
+      // Agregar cada archivo al FormData
+      Array.from(archivos).forEach(archivo => {
+        formData.append('archivos', archivo);
+      });
+      
+      const response = await api.post(`/tickets/${tiquetId}/comentarios`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+      return response.data;
+    } else {
+      // Si no hay archivos, usamos el método regular
+      const response = await api.post(`/tickets/${tiquetId}/comentarios`, { texto });
+      return response.data;
+    }
   },
   
   // Eliminar un comentario

@@ -1,4 +1,4 @@
-const { Tiquet, Usuario, HistorialTiquet, ComentarioTiquet, ArchivoTicket, sequelize } = require('../models');
+const { Tiquet, Usuario, HistorialTiquet, ComentarioTiquet, ArchivoTicket, ArchivoComentario, sequelize } = require('../models');
 const nodemailer = require('nodemailer');
 const fs = require('fs');
 const path = require('path');
@@ -169,6 +169,10 @@ const getTiquetPorId = async (req, res) => {
               model: Usuario,
               as: 'usuario',
               attributes: ['id', 'nombre', 'email', 'rol']
+            },
+            {
+              model: ArchivoComentario,
+              as: 'archivos'
             }
           ],
           order: [['fecha_creacion', 'ASC']]
@@ -470,13 +474,65 @@ const agregarComentario = async (req, res) => {
       texto
     });
     
-    // Recuperar el comentario con datos del usuario
+    // Procesar archivos adjuntos si existen
+    if (req.files && req.files.length > 0) {
+      // Crear directorio para los archivos del comentario
+      const comentarioDir = path.join(__dirname, '../../uploads/comentarios', comentario.id.toString());
+      if (!fs.existsSync(comentarioDir)) {
+        fs.mkdirSync(comentarioDir, { recursive: true });
+      }
+      
+      // Guardar cada archivo en la base de datos
+      const archivosPromises = req.files.map(async (file) => {
+        // Log para depuración
+        console.log('Archivo recibido en comentario:', file);
+        
+        // Construir las rutas de origen y destino
+        const origenPath = file.path; // Ruta actual (probablemente en temp)
+        const destinoPath = path.join(comentarioDir, file.filename); // Nueva ruta en la carpeta del comentario
+        
+        // Mover el archivo de temp a la carpeta del comentario
+        if (origenPath !== destinoPath) {
+          console.log(`Moviendo archivo: ${origenPath} -> ${destinoPath}`);
+          try {
+            if (fs.existsSync(origenPath)) {
+              fs.copyFileSync(origenPath, destinoPath);
+              fs.unlinkSync(origenPath); // Eliminar el archivo original
+              console.log('Archivo movido correctamente');
+            } else {
+              console.error('El archivo origen no existe:', origenPath);
+            }
+          } catch (err) {
+            console.error('Error al mover el archivo:', err);
+          }
+        }
+        
+        return ArchivoComentario.create({
+          comentario_id: comentario.id,
+          nombre_original: file.originalname,
+          nombre_servidor: file.filename,
+          tipo: file.mimetype,
+          tamanio: file.size,
+          ruta: `/uploads/comentarios/${comentario.id}/${file.filename}`
+        });
+      });
+      
+      await Promise.all(archivosPromises);
+    }
+    
+    // Recuperar el comentario con datos del usuario y archivos
     const comentarioConUsuario = await ComentarioTiquet.findByPk(comentario.id, {
-      include: [{
-        model: Usuario,
-        as: 'usuario',
-        attributes: ['id', 'nombre', 'email', 'rol']
-      }]
+      include: [
+        {
+          model: Usuario,
+          as: 'usuario',
+          attributes: ['id', 'nombre', 'email', 'rol']
+        },
+        {
+          model: ArchivoComentario,
+          as: 'archivos'
+        }
+      ]
     });
     
     return res.status(201).json({
@@ -485,6 +541,7 @@ const agregarComentario = async (req, res) => {
       message: 'Comentario agregado exitosamente'
     });
   } catch (error) {
+    console.error('Error al agregar comentario:', error);
     return res.status(500).json({
       success: false,
       message: 'Error al agregar comentario',
@@ -521,11 +578,17 @@ const getComentariosTiquet = async (req, res) => {
     // Obtener comentarios
     const comentarios = await ComentarioTiquet.findAll({
       where: { tiquet_id: id },
-      include: [{
-        model: Usuario,
-        as: 'usuario',
-        attributes: ['id', 'nombre', 'email', 'rol']
-      }],
+      include: [
+        {
+          model: Usuario,
+          as: 'usuario',
+          attributes: ['id', 'nombre', 'email', 'rol']
+        },
+        {
+          model: ArchivoComentario,
+          as: 'archivos'
+        }
+      ],
       order: [['fecha_creacion', 'ASC']]
     });
     
@@ -554,7 +617,11 @@ const eliminarComentario = async (req, res) => {
       where: { 
         id: comentario_id,
         tiquet_id: tiquet_id
-      }
+      },
+      include: [{
+        model: ArchivoComentario,
+        as: 'archivos'
+      }]
     });
     
     if (!comentario) {
@@ -570,6 +637,31 @@ const eliminarComentario = async (req, res) => {
         success: false,
         message: 'No tienes permiso para eliminar este comentario'
       });
+    }
+    
+    // Eliminar archivos físicos primero si existen
+    if (comentario.archivos && comentario.archivos.length > 0) {
+      const directorioArchivos = path.join(__dirname, '../../uploads/comentarios', comentario_id.toString());
+      
+      // Eliminar cada archivo
+      for (const archivo of comentario.archivos) {
+        const rutaArchivo = path.join(__dirname, '../..', archivo.ruta);
+        if (fs.existsSync(rutaArchivo)) {
+          fs.unlinkSync(rutaArchivo);
+        }
+        
+        // Eliminar el registro de la base de datos
+        await archivo.destroy();
+      }
+      
+      // Intentar eliminar el directorio si existe
+      if (fs.existsSync(directorioArchivos)) {
+        try {
+          fs.rmdirSync(directorioArchivos);
+        } catch (error) {
+          console.error('Error al eliminar directorio de archivos:', error);
+        }
+      }
     }
     
     // Eliminar el comentario

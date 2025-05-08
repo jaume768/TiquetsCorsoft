@@ -10,7 +10,7 @@ router.post('/', verificarToken, upload.array('archivos', 5), ticketController.c
 router.get('/:id', verificarToken, ticketController.getTiquetPorId);
 
 // Rutas para comentarios de tiquets
-router.post('/:id/comentarios', verificarToken, ticketController.agregarComentario);
+router.post('/:id/comentarios', verificarToken, upload.array('archivos', 5), ticketController.agregarComentario);
 router.get('/:id/comentarios', verificarToken, ticketController.getComentariosTiquet);
 router.delete('/:tiquet_id/comentarios/:comentario_id', verificarToken, ticketController.eliminarComentario);
 

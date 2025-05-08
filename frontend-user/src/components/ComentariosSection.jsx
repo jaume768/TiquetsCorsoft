@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import ticketService from '../services/ticketService';
+import archivoService from '../services/archivoService';
 import '../styles/ComentariosSection.css';
 
 const ComentariosSection = ({ tiquetId, usuario }) => {
@@ -7,6 +8,7 @@ const ComentariosSection = ({ tiquetId, usuario }) => {
   const [nuevoComentario, setNuevoComentario] = useState('');
   const [cargando, setCargando] = useState(false);
   const [error, setError] = useState(null);
+  const [descargandoArchivo, setDescargandoArchivo] = useState(false);
 
   // Cargar comentarios
   const cargarComentarios = async () => {
@@ -48,6 +50,32 @@ const ComentariosSection = ({ tiquetId, usuario }) => {
       setError('No se pudo agregar el comentario. Intente nuevamente más tarde.');
     } finally {
       setCargando(false);
+    }
+  };
+
+  // Descargar un archivo adjunto de comentario
+  const handleDescargarArchivo = async (archivoId) => {
+    try {
+      setDescargandoArchivo(true);
+      // Usar el método específico para archivos de comentarios
+      const blob = await archivoService.descargarArchivoComentario(archivoId);
+      
+      // Crear URL para la descarga
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `archivo_${archivoId}`);
+      document.body.appendChild(link);
+      link.click();
+      
+      // Limpieza
+      link.parentNode.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Error al descargar archivo de comentario:', error);
+      alert('No se pudo descargar el archivo. Intente nuevamente más tarde.');
+    } finally {
+      setDescargandoArchivo(false);
     }
   };
 
@@ -101,6 +129,45 @@ const ComentariosSection = ({ tiquetId, usuario }) => {
                 </span>
               </div>
               <div className="comentario-contenido">{comentario.texto}</div>
+              
+              {/* Mostrar archivos adjuntos si el comentario tiene */}
+              {comentario.archivos && comentario.archivos.length > 0 && (
+                <div className="comentario-archivos">
+                  <h4 className="comentario-archivos-titulo">
+                    <i className="fas fa-paperclip"></i> Archivos adjuntos ({comentario.archivos.length})
+                  </h4>
+                  <div className="comentario-archivos-lista">
+                    {comentario.archivos.map(archivo => (
+                      <div className="comentario-archivo-item" key={archivo.id}>
+                        {/* Icono según tipo de archivo */}
+                        <div className="comentario-archivo-icon">
+                          <i className={`fas ${archivo.tipo.includes('image') ? 'fa-file-image' : 
+                                        archivo.tipo.includes('pdf') ? 'fa-file-pdf' : 
+                                        archivo.tipo.includes('word') ? 'fa-file-word' : 
+                                        archivo.tipo.includes('zip') ? 'fa-file-archive' : 'fa-file'}`}></i>
+                        </div>
+                        <div className="comentario-archivo-info">
+                          <span className="comentario-archivo-nombre" title={archivo.nombre_original}>
+                            {archivo.nombre_original.length > 20 ? 
+                              archivo.nombre_original.substring(0, 17) + '...' : 
+                              archivo.nombre_original}
+                          </span>
+                          <span className="comentario-archivo-size">
+                            {(archivo.tamanio / 1024).toFixed(1)} KB
+                          </span>
+                          {/* Botón de descarga directamente junto a la información del archivo */}
+                          <button 
+                            className="comentario-archivo-descargar" 
+                            onClick={() => handleDescargarArchivo(archivo.id)}
+                          >
+                            Descargar
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
               
               {puedeEliminarComentario(comentario) && (
                 <button 

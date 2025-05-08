@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import ticketService from '../services/ticketService';
+import archivoService from '../services/archivoService';
 import '../styles/ComentariosSection.css';
 
 const ComentariosSection = ({ tiquetId, usuario }) => {
@@ -7,6 +8,9 @@ const ComentariosSection = ({ tiquetId, usuario }) => {
   const [nuevoComentario, setNuevoComentario] = useState('');
   const [cargando, setCargando] = useState(false);
   const [error, setError] = useState(null);
+  const [archivosSeleccionados, setArchivosSeleccionados] = useState([]);
+  const [previewArchivos, setPreviewArchivos] = useState([]);
+  const fileInputRef = useRef(null);
 
   // Cargar comentarios
   const cargarComentarios = async () => {
@@ -29,6 +33,53 @@ const ComentariosSection = ({ tiquetId, usuario }) => {
     }
   }, [tiquetId]);
 
+  // Manejar selección de archivos
+  const handleFileChange = (e) => {
+    const files = Array.from(e.target.files);
+    setArchivosSeleccionados(files);
+    
+    // Crear previsualizaciones
+    const previews = files.map(file => ({
+      name: file.name,
+      size: file.size,
+      type: file.type,
+      preview: file.type.startsWith('image/') ? URL.createObjectURL(file) : null
+    }));
+    
+    setPreviewArchivos(previews);
+  };
+  
+  // Eliminar un archivo seleccionado
+  const handleRemoveFile = (index) => {
+    const newFiles = [...archivosSeleccionados];
+    newFiles.splice(index, 1);
+    setArchivosSeleccionados(newFiles);
+    
+    const newPreviews = [...previewArchivos];
+    // Revocar URL para liberar memoria
+    if (newPreviews[index].preview) {
+      URL.revokeObjectURL(newPreviews[index].preview);
+    }
+    newPreviews.splice(index, 1);
+    setPreviewArchivos(newPreviews);
+  };
+
+  // Resetear los archivos seleccionados
+  const resetFiles = () => {
+    // Revocar todas las URLs para liberar memoria
+    previewArchivos.forEach(preview => {
+      if (preview.preview) {
+        URL.revokeObjectURL(preview.preview);
+      }
+    });
+    
+    setArchivosSeleccionados([]);
+    setPreviewArchivos([]);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
   // Enviar nuevo comentario
   const handleSubmitComentario = async (e) => {
     e.preventDefault();
@@ -39,8 +90,9 @@ const ComentariosSection = ({ tiquetId, usuario }) => {
     
     try {
       setCargando(true);
-      await ticketService.agregarComentario(tiquetId, nuevoComentario);
+      await ticketService.agregarComentario(tiquetId, nuevoComentario, archivosSeleccionados);
       setNuevoComentario('');
+      resetFiles();
       await cargarComentarios(); // Recargar comentarios después de agregar uno nuevo
       setError(null);
     } catch (error) {
@@ -108,6 +160,47 @@ const ComentariosSection = ({ tiquetId, usuario }) => {
                 </div>
                 <p className="comentario-content">{comentario.texto}</p>
                 
+                {/* Mostrar archivos adjuntos del comentario si existen */}
+                {comentario.archivos && comentario.archivos.length > 0 && (
+                  <div className="comentario-archivos">
+                    <h6 className="comentario-archivos-titulo">
+                      <i className="fas fa-paperclip"></i> Archivos adjuntos ({comentario.archivos.length})
+                    </h6>
+                    <div className="comentario-archivos-lista">
+                      {comentario.archivos.map(archivo => (
+                        <div className="comentario-archivo-item" key={archivo.id}>
+                          {/* Icono según tipo de archivo */}
+                          <div className="comentario-archivo-icon">
+                            <i className={`fas ${archivo.tipo.includes('image') ? 'fa-file-image' : 
+                                         archivo.tipo.includes('pdf') ? 'fa-file-pdf' : 
+                                         archivo.tipo.includes('word') ? 'fa-file-word' : 
+                                         archivo.tipo.includes('zip') ? 'fa-file-archive' : 'fa-file'}`}></i>
+                          </div>
+                          <div className="comentario-archivo-info">
+                            <span className="comentario-archivo-nombre" title={archivo.nombre_original}>
+                              {archivo.nombre_original.length > 20 ? 
+                                archivo.nombre_original.substring(0, 17) + '...' : 
+                                archivo.nombre_original}
+                            </span>
+                            <span className="comentario-archivo-size">
+                              {(archivo.tamanio / 1024).toFixed(1)} KB
+                            </span>
+                          </div>
+                          <div className="comentario-archivo-acciones">
+                            <button 
+                              className="comentario-archivo-btn" 
+                              onClick={() => window.open(`/api/archivos/archivos/${archivo.id}`, '_blank')}
+                              title="Descargar archivo"
+                            >
+                              <i className="fas fa-download"></i>
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                
                 {puedeEliminarComentario() && (
                   <div className="comentario-actions">
                     <button 
@@ -135,6 +228,57 @@ const ComentariosSection = ({ tiquetId, usuario }) => {
             disabled={cargando}
             required
           />
+          
+          {/* Sección de archivos adjuntos */}
+          <div className="comentarios-form-archivos">
+            <label className="comentarios-form-archivos-label">
+              <i className="fas fa-paperclip"></i> Adjuntar archivos
+              <input
+                type="file"
+                multiple
+                className="comentarios-form-archivos-input"
+                onChange={handleFileChange}
+                disabled={cargando}
+                ref={fileInputRef}
+              />
+            </label>
+            
+            {previewArchivos.length > 0 && (
+              <div className="comentarios-form-archivos-preview">
+                <h6>Archivos seleccionados:</h6>
+                <div className="archivos-preview-list">
+                  {previewArchivos.map((file, index) => (
+                    <div className="archivo-preview-item" key={index}>
+                      {file.preview ? (
+                        <div className="archivo-preview-image">
+                          <img src={file.preview} alt={file.name} />
+                        </div>
+                      ) : (
+                        <div className="archivo-preview-icon">
+                          <i className={`fas ${file.type.includes('pdf') ? 'fa-file-pdf' : 
+                                         file.type.includes('word') ? 'fa-file-word' : 
+                                         file.type.includes('zip') ? 'fa-file-archive' : 'fa-file'}`}></i>
+                        </div>
+                      )}
+                      <div className="archivo-preview-info">
+                        <span className="archivo-preview-nombre">{file.name}</span>
+                        <span className="archivo-preview-size">{(file.size / 1024).toFixed(1)} KB</span>
+                      </div>
+                      <button 
+                        type="button" 
+                        className="archivo-preview-remove"
+                        onClick={() => handleRemoveFile(index)}
+                        disabled={cargando}
+                      >
+                        <i className="fas fa-times"></i>
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+          
           <button 
             type="submit" 
             className="comentarios-form-submit"
@@ -146,7 +290,7 @@ const ComentariosSection = ({ tiquetId, usuario }) => {
                 Enviando...
               </>
             ) : (
-              <>Enviar comentario</>
+              <>Enviar comentario {archivosSeleccionados.length > 0 && `(${archivosSeleccionados.length} archivos adjuntos)`}</>
             )}
           </button>
         </form>

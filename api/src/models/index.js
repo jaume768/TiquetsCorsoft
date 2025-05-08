@@ -5,6 +5,7 @@ const HistorialTiquet = require('./historialTiquet.model');
 const ComentarioTiquet = require('./comentarioTiquet.model');
 const LoginRegistro = require('./loginRegistro.model');
 const ArchivoTicket = require('./archivoTicket.model');
+const ArchivoComentario = require('./archivoComentario.model');
 
 // Definir relaciones entre modelos
 Usuario.hasMany(Tiquet, { foreignKey: 'usuario_id', as: 'tiquets' });
@@ -31,6 +32,10 @@ LoginRegistro.belongsTo(Usuario, { foreignKey: 'usuario_id', as: 'usuario' });
 Tiquet.hasMany(ArchivoTicket, { foreignKey: 'ticket_id', as: 'archivos' });
 ArchivoTicket.belongsTo(Tiquet, { foreignKey: 'ticket_id', as: 'ticket' });
 
+// Relaciones para archivos de comentarios
+ComentarioTiquet.hasMany(ArchivoComentario, { foreignKey: 'comentario_id', as: 'archivos' });
+ArchivoComentario.belongsTo(ComentarioTiquet, { foreignKey: 'comentario_id', as: 'comentario' });
+
 // Sincronizar modelos con la base de datos
 // En producción, se recomienda usar { force: false } o migrations
 const syncModels = async () => {
@@ -52,5 +57,6 @@ module.exports = {
   HistorialTiquet,
   ComentarioTiquet,
   LoginRegistro,
-  ArchivoTicket
+  ArchivoTicket,
+  ArchivoComentario
 };

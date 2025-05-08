@@ -5,10 +5,20 @@ const fs = require('fs');
 // Configurar almacenamiento
 const storage = multer.diskStorage({
   destination: function(req, file, cb) {
-    // Obtener el ID del ticket (podría ser de un ticket existente o uno nuevo)
+    // Determinar si es para un comentario o un ticket
+    const isComentario = req.path.includes('/comentarios');
     const ticketId = req.params.id || req.body.id || 'temp';
-    // Usar ruta absoluta que coincida con el volumen en Docker
-    const uploadDir = path.join(__dirname, '../../uploads/tickets', ticketId.toString());
+    
+    // Definir el directorio base según si es comentario o ticket
+    let uploadDir;
+    if (isComentario) {
+      // Para comentarios, usamos un directorio temporal ya que aún no tenemos el ID del comentario
+      // (se moverá después al directorio correcto en el controlador)
+      uploadDir = path.join(__dirname, '../../uploads/temp');
+    } else {
+      // Para tickets, usamos el directorio del ticket
+      uploadDir = path.join(__dirname, '../../uploads/tickets', ticketId.toString());
+    }
     
     // Crear directorio si no existe
     if (!fs.existsSync(uploadDir)) {

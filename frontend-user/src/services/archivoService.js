@@ -1,6 +1,6 @@
 import api from './api';
 
-// Servicio para gestionar las operaciones relacionadas con archivos adjuntos de tickets
+// Servicio para gestionar las operaciones relacionadas con archivos adjuntos de tickets y comentarios
 const archivoService = {
   // Obtener todos los archivos de un ticket
   getArchivosPorTicket: async (ticketId) => {
@@ -8,10 +8,23 @@ const archivoService = {
     return response.data;
   },
   
-  // Descargar un archivo
+  // Descargar un archivo de ticket
   descargarArchivo: async (archivoId) => {
     try {
       const response = await api.get(`/archivos/archivos/${archivoId}`, {
+        responseType: 'blob'
+      });
+      
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+  
+  // Descargar un archivo de comentario
+  descargarArchivoComentario: async (archivoId) => {
+    try {
+      const response = await api.get(`/archivos/comentarios/archivos/${archivoId}`, {
         responseType: 'blob'
       });
       

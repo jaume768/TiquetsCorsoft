@@ -1,6 +1,6 @@
 const path = require('path');
 const fs = require('fs');
-const { ArchivoTicket, Tiquet } = require('../models');
+const { ArchivoTicket, Tiquet, ArchivoComentario, ComentarioTiquet } = require('../models');
 
 // Descargar un archivo adjunto
 const descargarArchivo = async (req, res) => {
@@ -157,8 +157,72 @@ const eliminarArchivo = async (req, res) => {
   }
 };
 
+// Descargar un archivo adjunto de comentario
+const descargarArchivoComentario = async (req, res) => {
+  try {
+    const { archivoId } = req.params;
+    
+    console.log('Solicitud de descarga para archivo de comentario ID:', archivoId);
+    console.log('Usuario solicitante:', req.usuario.id, req.usuario.rol);
+    
+    // Buscar archivo de comentario
+    const archivo = await ArchivoComentario.findByPk(archivoId, {
+      include: [{
+        model: ComentarioTiquet,
+        as: 'comentario',
+        include: [{
+          model: Tiquet,
+          as: 'tiquet',
+          attributes: ['id', 'usuario_id']
+        }]
+      }]
+    });
+    
+    if (!archivo) {
+      return res.status(404).json({
+        success: false,
+        message: 'Archivo de comentario no encontrado'
+      });
+    }
+    
+    // Verificar permiso (usuario propietario del ticket o admin)
+    if (req.usuario.rol !== 'admin' && req.usuario.id !== archivo.comentario.tiquet.usuario_id) {
+      return res.status(403).json({
+        success: false,
+        message: 'No tiene permiso para acceder a este archivo'
+      });
+    }
+    
+    // Construir ruta completa del archivo
+    const filePath = path.join(__dirname, '../../uploads/comentarios', archivo.comentario_id.toString(), archivo.nombre_servidor);
+    
+    // Log para depuración
+    console.log('Ruta del archivo de comentario a descargar:', filePath);
+    
+    // Verificar si existe
+    if (!fs.existsSync(filePath)) {
+      return res.status(404).json({
+        success: false,
+        message: 'Archivo no encontrado en el servidor'
+      });
+    }
+    
+    // Enviar archivo para descarga
+    res.download(filePath, archivo.nombre_original);
+    
+  } catch (error) {
+    console.error('Error al descargar archivo de comentario:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Error al descargar archivo de comentario',
+      error: error.message
+    });
+  }
+};
+
 module.exports = {
   descargarArchivo,
   getArchivosPorTicket,
-  eliminarArchivo
+  eliminarArchivo,
+  descargarArchivoComentario
 };
