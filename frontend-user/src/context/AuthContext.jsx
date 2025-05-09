@@ -36,6 +36,7 @@ export const AuthProvider = ({ children }) => {
           const response = await api.get(`/auth/auto-login?codcli=${codcli}&codigoSeguridad=${codigoSeguridad}`);
           localStorage.setItem('token', response.data.token);
           setUsuario(response.data.usuario);
+          localStorage.setItem('empresa', response.data.usuario.nombre);
           setError(null);
           setCargando(false);
           return;

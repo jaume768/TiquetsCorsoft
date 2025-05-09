@@ -2,8 +2,12 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { FaTicketAlt, FaPlus, FaPhoneAlt, FaMapMarkerAlt, FaEnvelope } from 'react-icons/fa';
 import '../styles/Header.css';
+import { useContext } from 'react';
+import AuthContext from '../context/AuthContext';
 
-const Header = ({ usuario }) => {
+const Header = () => {
+  const { usuario } = useContext(AuthContext);
+  const empresa = usuario?.nombre || localStorage.getItem('empresa');
   return (
     <header className="header">
       <div className="container">
@@ -16,16 +20,22 @@ const Header = ({ usuario }) => {
             </Link>
           </div>
           
-          <nav className="nav">
-            <Link to="/mis-tiquets" className="nav-link">
-              <FaTicketAlt className="icon-modern" />
-              <span>Mis Tickets</span>
-            </Link>
-            <Link to="/tiquets/nuevo" className="nav-link">
-              <FaPlus className="icon-modern" />
-              <span>Nuevo Ticket</span>
-            </Link>
-          </nav>
+          <div className="nav-container">
+            <nav className="nav">
+              <Link to="/mis-tiquets" className="nav-link">
+                <FaTicketAlt /> <span>Mis Tickets</span>
+              </Link>
+              <Link to="/tiquets/nuevo" className="nav-link">
+                <FaPlus /> <span>Nuevo Ticket</span>
+              </Link>
+            </nav>
+
+            {empresa && (
+              <div className="company-name">
+                {empresa}
+              </div>
+            )}
+          </div>
           
           <div className="contact-info">
             <div className="contact-item">
