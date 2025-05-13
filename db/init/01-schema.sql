@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS usuarios (
     email VARCHAR(100) NOT NULL,
     password VARCHAR(255) NOT NULL,
     codcli VARCHAR(10) DEFAULT NULL,
+    Codw VARCHAR(20) DEFAULT NULL,
     nif VARCHAR(15) DEFAULT NULL,
     direccion VARCHAR(255) DEFAULT NULL,
     rol ENUM('usuario', 'admin') NOT NULL DEFAULT 'usuario',

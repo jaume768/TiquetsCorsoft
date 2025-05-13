@@ -100,7 +100,8 @@ const UsuariosPage = () => {
         rol: usuario.rol || 'usuario',
         codcli: usuario.codcli || '',
         nif: usuario.nif || '',
-        direccion: usuario.direccion || ''
+        direccion: usuario.direccion || '',
+        Codw: usuario.Codw || ''
       });
     } else {
       // Resetear formulario para nuevo usuario
@@ -111,7 +112,8 @@ const UsuariosPage = () => {
         rol: 'usuario',
         codcli: '',
         nif: '',
-        direccion: ''
+        direccion: '',
+        Codw: ''
       });
     }
     
@@ -247,7 +249,7 @@ const UsuariosPage = () => {
           className="btn-nuevo-usuario"
           onClick={() => abrirModal()}
         >
-          <i className="icon icon-user-plus"></i> Nuevo Usuario
+          <i className="icon icon-users"></i> Nuevo Usuario
         </button>
       </header>
       
@@ -352,6 +354,7 @@ const UsuariosPage = () => {
                   <th>NIF</th>
                   <th>Dirección</th>
                   <th>Fecha Registro</th>
+                  <th>Codw</th>
                   <th>Acciones</th>
                 </tr>
               </thead>
@@ -372,6 +375,7 @@ const UsuariosPage = () => {
                     <td className="usuario-fecha">
                       {usuarioItem.fecha_creacion ? new Date(usuarioItem.fecha_creacion).toLocaleDateString('es-ES') : '-'}
                     </td>
+                    <td className="usuario-codw">{usuarioItem.Codw || '-'}</td>
                     <td className="usuario-acciones">
                       <button 
                         className="btn-editar-usuario"
@@ -537,6 +541,19 @@ const UsuariosPage = () => {
                     name="direccion"
                     className="form-control"
                     value={formData.direccion}
+                    onChange={handleInputChange}
+                    disabled={isSubmitting}
+                  />
+                </div>
+                
+                <div className="form-group">
+                  <label htmlFor="Codw">Codw</label>
+                  <input 
+                    type="text" 
+                    id="Codw" 
+                    name="Codw"
+                    className="form-control"
+                    value={formData.Codw}
                     onChange={handleInputChange}
                     disabled={isSubmitting}
                   />

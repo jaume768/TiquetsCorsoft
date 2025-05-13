@@ -27,6 +27,10 @@ const Usuario = sequelize.define('Usuario', {
     type: DataTypes.STRING(10),
     allowNull: true
   },
+  Codw: {
+    type: DataTypes.STRING(20),
+    allowNull: true
+  },
   nif: {
     type: DataTypes.STRING(15),
     allowNull: true

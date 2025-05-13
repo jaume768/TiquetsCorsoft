@@ -85,8 +85,8 @@ async function procesarClientes(clientsData) {
   // Recorrer cada línea de cliente
   for (const clientLine of clientsData) {
     try {
-      // Separar campos (formato: codcli|nombre|nif|direccion|email)
-      const [codcli, nombre, nif, direccion, email] = clientLine.split('|');
+      // Separar campos (formato: codcli|nombre|nif|direccion|email|Codw)
+      const [codcli, nombre, nif, direccion, email, Codw] = clientLine.split('|');
       
       // Ignorar líneas sin datos esenciales
       if (!codcli || !nombre) {
@@ -104,6 +104,7 @@ async function procesarClientes(clientsData) {
         if (nif) updateData.nif = nif;
         if (direccion) updateData.direccion = direccion;
         if (email) updateData.email = email;
+        if (Codw) updateData.Codw = Codw;
         
         await existingClient.update(updateData);
         updatedClients.push({ codcli, nombre });
@@ -116,6 +117,7 @@ async function procesarClientes(clientsData) {
           direccion: direccion || null,
           email: email || `cliente-${codcli}@corsoft.auto`,
           password: 'password123', // El modelo se encarga de hashear la contraseña
+          Codw: Codw || null,
           rol: 'usuario'
         });
         newClients.push({ codcli, nombre });

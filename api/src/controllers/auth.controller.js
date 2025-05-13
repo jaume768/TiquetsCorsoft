@@ -189,13 +189,13 @@ const register = async (req, res) => {
 // Controlador para login automático por código de cliente
 const autoLogin = async (req, res) => {
   try {
-    const { codcli, codigoSeguridad } = req.query;
+    const { codcli, codigoSeguridad, Codw } = req.query;
 
     // Validar que se enviaron los parámetros necesarios
-    if (!codcli) {
+    if (!codcli && !Codw) {
       return res.status(400).json({
         success: false,
-        message: 'El parámetro codcli es requerido'
+        message: 'Se requiere el parámetro codcli o Codw'
       });
     }
     
@@ -214,10 +214,16 @@ const autoLogin = async (req, res) => {
       });
     }
 
-    // Buscar usuario por el código de cliente proporcionado
-    const usuario = await Usuario.findByClientCode(codcli);
+    let usuario = null;
 
-    // Si no existe el usuario, crear uno con valores predeterminados
+    // Buscar usuario por el código de cliente proporcionado o por Codw
+    if (codcli && codcli !== "null") {
+      usuario = await Usuario.findByClientCode(codcli);
+    } else if (Codw) {
+      usuario = await Usuario.findOne({ where: { Codw } });
+    }
+
+    // Si no existe el usuario, devolver error
     if (!usuario) {
       return res.status(404).json({
         success: false,

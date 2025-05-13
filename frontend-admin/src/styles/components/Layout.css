@@ -20,9 +20,7 @@
 
 .page-content {
   flex: 1;
-  padding: 25px;
   background-color: #f5f7fa;
-  min-height: calc(100vh - 70px);
 }
 
 /* Animaciones y transiciones */
