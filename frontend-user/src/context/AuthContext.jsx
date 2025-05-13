@@ -10,10 +10,13 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     const verificarAutenticacion = async () => {
-      // Primero intentamos obtener el código de cliente de la URL
+      // Primero intentamos obtener los parámetros de la URL
       const params = new URLSearchParams(window.location.search);
       let codcli = params.get('codcli');
       let codigoSeguridad = params.get('codigoSeguridad') || params.get('codigo');
+      // Nuevo parámetro Codw
+      let Codw = params.get('Codw');
+      
       // Guardar nombre de usuario de la URL si existe
       const nombreUsuarioParam = params.get('usuario');
       if (nombreUsuarioParam) {
@@ -21,19 +24,32 @@ export const AuthProvider = ({ children }) => {
       }
 
       // Si hay parámetros de auto-login en la URL, intentamos el proceso
-      if (codcli || codigoSeguridad) {
-        // Si falta algún parámetro necesario, redirigimos a la página 404
-        if (!codcli || !codigoSeguridad) {
+      if ((codcli || Codw) && codigoSeguridad) {
+        // Si falta el código de seguridad, redirigimos a la página 404
+        if (!codigoSeguridad) {
           window.location.href = '/not-found';
           return;
         }
 
         // Guardamos los parámetros en localStorage
-        localStorage.setItem('codcli', codcli);
+        if (codcli) localStorage.setItem('codcli', codcli);
+        if (Codw) localStorage.setItem('Codw', Codw);
         localStorage.setItem('codigoSeguridad', codigoSeguridad);
 
         try {
-          const response = await api.get(`/auth/auto-login?codcli=${codcli}&codigoSeguridad=${codigoSeguridad}`);
+          // Construir la URL de auto-login manteniendo el formato original para compatibilidad
+          let autoLoginUrl;
+          if (codcli) {
+            // Formato original con codcli primero para máxima compatibilidad
+            autoLoginUrl = `/auth/auto-login?codcli=${codcli}&codigoSeguridad=${codigoSeguridad}`;
+            // Añadir Codw solo si existe
+            if (Codw) autoLoginUrl += `&Codw=${Codw}`;
+          } else {
+            // Si no hay codcli, usar Codw como parámetro principal
+            autoLoginUrl = `/auth/auto-login?codigoSeguridad=${codigoSeguridad}&Codw=${Codw}`;
+          }
+          
+          const response = await api.get(autoLoginUrl);
           localStorage.setItem('token', response.data.token);
           setUsuario(response.data.usuario);
           localStorage.setItem('empresa', response.data.usuario.nombre);
@@ -45,6 +61,7 @@ export const AuthProvider = ({ children }) => {
           // En caso de cualquier error, redirigimos a la página 404 sin mostrar detalles
           localStorage.removeItem('codigoSeguridad');
           localStorage.removeItem('codcli');
+          localStorage.removeItem('Codw');
           window.location.href = '/not-found';
           return;
         }
@@ -52,11 +69,24 @@ export const AuthProvider = ({ children }) => {
       
       // Si no hay parámetros en la URL, intentamos recuperar del localStorage
       codcli = localStorage.getItem('codcli');
+      Codw = localStorage.getItem('Codw');
       codigoSeguridad = localStorage.getItem('codigoSeguridad');
       
-      if (codcli && codigoSeguridad) {
+      if ((codcli || Codw) && codigoSeguridad) {
         try {
-          const response = await api.get(`/auth/auto-login?codcli=${codcli}&codigoSeguridad=${codigoSeguridad}`);
+          // Construir la URL de auto-login manteniendo el formato original para compatibilidad
+          let autoLoginUrl;
+          if (codcli) {
+            // Formato original con codcli primero para máxima compatibilidad
+            autoLoginUrl = `/auth/auto-login?codcli=${codcli}&codigoSeguridad=${codigoSeguridad}`;
+            // Añadir Codw solo si existe
+            if (Codw) autoLoginUrl += `&Codw=${Codw}`;
+          } else {
+            // Si no hay codcli, usar Codw como parámetro principal
+            autoLoginUrl = `/auth/auto-login?codigoSeguridad=${codigoSeguridad}&Codw=${Codw}`;
+          }
+          
+          const response = await api.get(autoLoginUrl);
           localStorage.setItem('token', response.data.token);
           setUsuario(response.data.usuario);
           setError(null);
@@ -67,6 +97,7 @@ export const AuthProvider = ({ children }) => {
           // Limpiamos los códigos guardados
           localStorage.removeItem('codigoSeguridad');
           localStorage.removeItem('codcli');
+          localStorage.removeItem('Codw');
         }
       }
 
@@ -130,6 +161,7 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('codcli');
+    localStorage.removeItem('Codw');
     localStorage.removeItem('nombreUsuario');
     setUsuario(null);
   };
