@@ -120,6 +120,34 @@
   font-weight: 500;
 }
 
+/* Estilos para el tema Webcar */
+.header.webcar-theme {
+  background-color: white;
+  color: black;
+}
+
+.webcar-theme .nav-link {
+  color: rgba(0, 0, 0, 0.85);
+}
+
+.webcar-theme .nav-link:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+  color: #000;
+}
+
+.webcar-theme .nav-link.active {
+  background-color: rgba(0, 0, 0, 0.15);
+  color: #000;
+}
+
+.webcar-theme .contact-item {
+  color: rgba(0, 0, 0, 0.85);
+}
+
+.webcar-theme .company-name {
+  color: #333;
+}
+
 /* Responsive */
 @media (max-width: 1200px) {
   .header-content {
