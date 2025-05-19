@@ -43,6 +43,82 @@ const enviarEmailNotificacion = async (tiquet, usuario) => {
   }
 };
 
+// Función para generar código de seguridad (año+mes+día) x 7 - 128
+const generarCodigoSeguridad = () => {
+  const fecha = new Date();
+  const anio = fecha.getFullYear() % 100; // Últimos dos dígitos del año
+  const mes = fecha.getMonth() + 1; // Mes (1-12)
+  const dia = fecha.getDate(); // Día del mes
+  
+  // Formato para obtener AAMMDD
+  const fechaCombinada = anio * 10000 + mes * 100 + dia;
+  
+  // Aplicar la fórmula: (AAMMDD) x 7 - 128
+  return fechaCombinada * 7 - 128;
+};
+
+// Función para enviar email al usuario cuando cambia el estado de un tiquet
+const enviarEmailCambioEstado = async (tiquet, usuario) => {
+  try {
+    const transporter = configurarTransporteEmail();
+    
+    // Mapeo de estados para texto más amigable
+    const estadosTexto = {
+      'pendiente': 'Pendiente',
+      'en_proceso': 'En Proceso',
+      'resuelto': 'Resuelto',
+      'cerrado': 'Cerrado'
+    };
+
+    console.log(usuario);
+    
+    const estadoTexto = estadosTexto[tiquet.estado] || tiquet.estado;
+    const clientURL = process.env.CLIENT_URL || 'http://localhost';
+    
+    // Generar código de seguridad para auto-login
+    const codigoSeguridad = generarCodigoSeguridad();
+    
+    // Construir URL con parámetros para auto-login
+    let autoLoginParams = new URLSearchParams();
+    autoLoginParams.append('codigoSeguridad', codigoSeguridad);
+    autoLoginParams.append('usuario', usuario.nombre);
+    
+    // Añadir parámetros especiales dependiendo del tipo de cliente
+    if (usuario.codcli) {
+      autoLoginParams.append('codcli', usuario.codcli);
+    }
+    
+    if (usuario.Codw) {
+      autoLoginParams.append('Codw', usuario.Codw);
+      // Si tiene Codw, agregar el parámetro Vista=w para el tema webcar
+      autoLoginParams.append('Vista', 'w');
+    }
+    
+    // URL completa con auto-login y redirección al tiquet específico
+    const baseUrl = `${clientURL}/?${autoLoginParams.toString()}`;
+    
+    await transporter.sendMail({
+      from: `"Sistema de Tiquets" <${process.env.SMTP_USER}>`,
+      to: usuario.email,
+      subject: `Actualización de su Tiquet #${tiquet.id}: ${tiquet.titulo}`,
+      html: `
+        <h1>Actualización de su Tiquet</h1>
+        <p><strong>ID:</strong> ${tiquet.id}</p>
+        <p><strong>Título:</strong> ${tiquet.titulo}</p>
+        <p><strong>Estado Actual:</strong> <span style="font-weight: bold; color: ${tiquet.estado === 'resuelto' ? 'green' : tiquet.estado === 'en_proceso' ? 'blue' : 'orange'}">${estadoTexto}</span></p>
+        <p>El estado de su tiquet ha sido actualizado. Puede ver los detalles completos haciendo clic en el siguiente enlace:</p>
+        <p><a href="${baseUrl}" style="display: inline-block; background-color: #4a6bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; font-weight: bold;">Ver Tiquets</a></p>
+        <p>Si tiene alguna consulta adicional, puede responder agregando un comentario en el tiquet.</p>
+        <p>Gracias por utilizar nuestro sistema de soporte.</p>
+      `
+    });
+    
+    console.log(`Email de cambio de estado enviado al usuario para tiquet #${tiquet.id}`);
+  } catch (error) {
+    console.error('Error al enviar email de cambio de estado:', error);
+  }
+};
+
 // Obtener todos los tiquets (solo admin)
 const getTodosTiquets = async (req, res) => {
   try {
@@ -334,7 +410,14 @@ const actualizarTiquet = async (req, res) => {
     const usuario_id = req.usuario.id;
     
     // Buscar el tiquet
-    const tiquet = await Tiquet.findByPk(id, { transaction });
+    const tiquet = await Tiquet.findByPk(id, { 
+      transaction,
+      include: [{
+        model: Usuario,
+        as: 'usuario',
+        attributes: ['id', 'nombre', 'email']
+      }]
+    });
     
     if (!tiquet) {
       await transaction.rollback();
@@ -366,6 +449,14 @@ const actualizarTiquet = async (req, res) => {
     }
     
     await transaction.commit();
+    
+    // Si el estado cambió, enviar email al usuario
+    if (estado && estado !== estadoAnterior && tiquet.usuario && tiquet.usuario.email) {
+      // Enviamos el email fuera de la transacción para no bloquear la respuesta
+      enviarEmailCambioEstado(tiquet, tiquet.usuario).catch(err => {
+        console.error('Error al enviar email de cambio de estado:', err);
+      });
+    }
     
     return res.status(200).json({
       success: true,
