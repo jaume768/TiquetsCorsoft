@@ -152,6 +152,48 @@ a:hover {
   }
 }
 
+/* Estilos específicos para el tema Webcar */
+.webcar-theme .btn,
+.webcar-theme button,
+.webcar-theme input[type="submit"],
+.webcar-theme button[type="submit"],
+.webcar-theme .buscar-button,
+.webcar-theme .btn-primary,
+.webcar-theme .btn-secondary,
+.webcar-theme .btn-success,
+.webcar-theme .btn-outline-primary,
+.webcar-theme a.btn {
+  background-color: #92b6d6;
+  border-color: #92b6d6;
+  color: white;
+  border-radius: 0;
+}
+
+.webcar-theme .btn:hover,
+.webcar-theme button:hover,
+.webcar-theme input[type="submit"]:hover,
+.webcar-theme button[type="submit"]:hover,
+.webcar-theme .buscar-button:hover,
+.webcar-theme .btn-primary:hover,
+.webcar-theme .btn-secondary:hover,
+.webcar-theme .btn-success:hover,
+.webcar-theme .btn-outline-primary:hover,
+.webcar-theme a.btn:hover {
+  background-color: #7da8cc;
+  border-color: #7da8cc;
+  color: white;
+}
+
+.webcar-theme .btn-outline-primary {
+  background-color: transparent;
+  color: #92b6d6;
+}
+
+.webcar-theme .btn-outline-primary:hover {
+  background-color: #92b6d6;
+  color: white;
+}
+
 /* Animaciones */
 @keyframes fadeIn {
   from {

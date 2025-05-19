@@ -178,14 +178,14 @@ const MisTiquetsPage = () => {
                   <button type="button" className="buscar-button" onClick={() => cargarTiquets()}>
                     <FaSearch className="icon-modern" /> Buscar
                   </button>
-                  <button
-                    type="button"
-                    className="reset-button"
-                    onClick={() => {
-                      resetFiltros();
+                  <button 
+                    className="limpiar-button webcar-limpiar-filtros"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setFiltros({ estado: '', prioridad: '', busqueda: '' });
                       cargarTiquets();
                     }}
-                  >
+                  >  
                     <FaTimesCircle className="icon-modern" /> Limpiar filtros
                   </button>
                 </div>

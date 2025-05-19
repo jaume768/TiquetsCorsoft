@@ -1,0 +1,42 @@
+/* Estilos específicos para los botones en el tema webcar */
+
+/* 1. Botón "Limpiar filtros" - Rojo */
+.webcar-theme .mis-tiquets-page button:nth-of-type(2),
+.webcar-theme button.reset-button,
+.webcar-theme button.limpiar-button {
+  background-color: #dc3545 !important;
+  border-color: #dc3545 !important;
+  color: white !important;
+  border-radius: 0 !important;
+  padding: 6px;
+}
+
+.webcar-theme .mis-tiquets-page button:nth-of-type(2):hover,
+.webcar-theme button.reset-button:hover,
+.webcar-theme button.limpiar-button:hover {
+  background-color: #bb2d3b !important;
+  border-color: #bb2d3b !important;
+}
+
+.limpiar-button.webcar-limpiar-filtros {
+  background-color: #dc3545 !important;
+  padding: 4px;
+  border-radius: 7px;
+}
+
+/* 2. Botón "Enviar" en el formulario de creación de tickets - Azul */
+.webcar-theme .crear-tiquet-form .form-actions button[type="submit"],
+.webcar-theme .crear-tiquet-form .btn-submit,
+.webcar-theme .crear-tiquet-card button[type="submit"] {
+  background: #92b6d6 !important;
+  border-color: #92b6d6 !important;
+  color: white !important;
+  border-radius: 0 !important;
+}
+
+.webcar-theme .crear-tiquet-form .form-actions button[type="submit"]:hover,
+.webcar-theme .crear-tiquet-form .btn-submit:hover,
+.webcar-theme .crear-tiquet-card button[type="submit"]:hover {
+  background: #7da8cc !important;
+  border-color: #7da8cc !important;
+}

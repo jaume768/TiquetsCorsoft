@@ -18,11 +18,8 @@ const Header = () => {
     return "/logo-corsoft.svg";
   };
   
-  // Clase CSS adicional según el tema
-  const headerClass = theme === 'webcar' ? 'header webcar-theme' : 'header';
-  
   return (
-    <header className={headerClass}>
+    <header className="header">
       <div className="container">
         <div className="header-content">
           <div className="logo-container">

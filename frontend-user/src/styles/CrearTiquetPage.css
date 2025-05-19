@@ -17,12 +17,23 @@
   overflow: hidden;
 }
 
+/* Estilo para crear-tiquet-card sin border-radius en tema webcar */
+.webcar-theme .crear-tiquet-card {
+  border-radius: 0;
+}
+
 .crear-tiquet-header {
   padding: 2rem;
   background: linear-gradient(135deg,#4a6bff 0%,#2541b8 100%);
   text-align: center;
   color: #fff;
   position: relative;
+}
+
+/* Estilo para crear-tiquet-header con fondo #92b6d6 en tema webcar */
+.webcar-theme .crear-tiquet-header {
+  background: #92b6d6;
+  background-image: none;
 }
 
 .crear-tiquet-header::before {
@@ -74,6 +85,11 @@
   border-radius: 0.75rem;
   background: #f8f9fa;
   transition: all .2s;
+}
+
+/* Estilo para controles de formulario sin border-radius en tema webcar */
+.webcar-theme .form-control {
+  border-radius: 0;
 }
 
 .form-control:focus {

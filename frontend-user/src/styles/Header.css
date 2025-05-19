@@ -121,30 +121,30 @@
 }
 
 /* Estilos para el tema Webcar */
-.header.webcar-theme {
+.webcar-theme .header {
   background-color: white;
   color: black;
 }
 
-.webcar-theme .nav-link {
+.webcar-theme .header .nav-link {
   color: rgba(0, 0, 0, 0.85);
 }
 
-.webcar-theme .nav-link:hover {
+.webcar-theme .header .nav-link:hover {
   background-color: rgba(0, 0, 0, 0.1);
   color: #000;
 }
 
-.webcar-theme .nav-link.active {
+.webcar-theme .header .nav-link.active {
   background-color: rgba(0, 0, 0, 0.15);
   color: #000;
 }
 
-.webcar-theme .contact-item {
+.webcar-theme .header .contact-item {
   color: rgba(0, 0, 0, 0.85);
 }
 
-.webcar-theme .company-name {
+.webcar-theme .header .company-name {
   color: #333;
 }
 

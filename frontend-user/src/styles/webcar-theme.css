@@ -1,0 +1,128 @@
+/* Archivo específico para estilos del tema webcar */
+
+/* Variables de tema */
+.webcar-theme {
+  --webcar-blue: #92b6d6;
+  --webcar-blue-hover: #7da8cc;
+  --webcar-red: #dc3545;
+  --webcar-red-hover: #bb2d3b;
+}
+
+/* Botones principales */
+.webcar-theme button,
+.webcar-theme .btn,
+.webcar-theme a.btn,
+.webcar-theme input[type="submit"],
+.webcar-theme button[type="submit"] {
+  background-color: var(--webcar-blue) !important;
+  border-color: var(--webcar-blue) !important;
+  color: white !important;
+  border-radius: 0 !important;
+}
+
+.webcar-theme button:hover,
+.webcar-theme .btn:hover,
+.webcar-theme a.btn:hover,
+.webcar-theme input[type="submit"]:hover,
+.webcar-theme button[type="submit"]:hover {
+  background-color: var(--webcar-blue-hover) !important;
+  border-color: var(--webcar-blue-hover) !important;
+}
+
+/* Botones específicos */
+.webcar-theme .nuevo-ticket-btn,
+.webcar-theme .crear-nuevo-tiquet {
+  background-color: var(--webcar-blue) !important;
+  border-color: var(--webcar-blue) !important;
+  color: white !important;
+  border-radius: 0 !important;
+}
+
+/* Botón de búsqueda */
+.webcar-theme .buscar-button {
+  background-color: var(--webcar-blue) !important;
+  border: none !important;
+  border-radius: 0 !important;
+  color: white !important;
+}
+
+/* Botón limpiar filtros */
+.webcar-theme .limpiar-button,
+.webcar-theme a.limpiar-filtros,
+.webcar-theme button.limpiar-filtros,
+.webcar-theme [class*="limpiar"],
+.webcar-theme button.btn-danger {
+  background-color: #dc3545 !important;
+  border-color: #dc3545 !important;
+  border: none !important;
+  border-radius: 0 !important;
+  color: white !important;
+}
+
+/* Tarjeta de creación de tiquets */
+.webcar-theme .crear-tiquet-card {
+  border-radius: 0 !important;
+  overflow: hidden;
+}
+
+.webcar-theme .crear-tiquet-header {
+  background: var(--webcar-blue) !important;
+  background-image: none !important;
+}
+
+/* Campos de formulario */
+.webcar-theme .form-control,
+.webcar-theme input,
+.webcar-theme textarea,
+.webcar-theme select {
+  border-radius: 0 !important;
+}
+
+/* Botón Enviar */
+.webcar-theme button[type="submit"],
+.webcar-theme input[type="submit"],
+.webcar-theme button.enviar-btn,
+.webcar-theme a.enviar-btn {
+  background-color: var(--webcar-blue) !important;
+  border-color: var(--webcar-blue) !important;
+  color: white !important;
+  border-radius: 0 !important;
+}
+
+/* Estilos específicos para el botón Limpiar filtros en MisTiquetsPage */
+.webcar-theme button:not([class*="buscar"]):has(.icon-modern),
+.webcar-theme button:not([class*="buscar"]):has(svg + *:contains('Limpiar')),
+.webcar-theme button.limpiar-button {
+  background-color: var(--webcar-red) !important;
+  border-color: var(--webcar-red) !important;
+  color: white !important;
+  border-radius: 0 !important;
+}
+
+/* Selector adicional para el botón Limpiar filtros */
+.webcar-theme button svg[class*="FaTimesCircle"] + *,
+.webcar-theme button:contains('Limpiar filtros') {
+  background-color: var(--webcar-red) !important;
+  border-color: var(--webcar-red) !important;
+}
+
+/* Estilos específicos para el botón Enviar en CrearTiquetPage */
+.webcar-theme button:has(svg[class*="FaPaperPlane"]),
+.webcar-theme button:has(svg + *:contains('Enviar')),
+.webcar-theme .form-actions button:last-child,
+.webcar-theme button:last-of-type:contains('Enviar') {
+  background-color: var(--webcar-blue) !important;
+  border-color: var(--webcar-blue) !important;
+  color: white !important;
+  border-radius: 0 !important;
+}
+
+/* Forzar estilos específicos */
+.webcar-theme a[href="/tiquets/nuevo"],
+.webcar-theme button.crear-nuevo-tiquet,
+.webcar-theme a.nuevo-ticket-btn {
+  background-color: var(--webcar-blue) !important;
+  border-color: var(--webcar-blue) !important;
+  color: white !important;
+  border-radius: 0 !important;
+}
