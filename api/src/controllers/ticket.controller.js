@@ -70,8 +70,6 @@ const enviarEmailCambioEstado = async (tiquet, usuario) => {
       'cerrado': 'Cerrado'
     };
 
-    console.log(usuario);
-    
     const estadoTexto = estadosTexto[tiquet.estado] || tiquet.estado;
     const clientURL = process.env.CLIENT_URL || 'http://localhost';
     
@@ -415,7 +413,7 @@ const actualizarTiquet = async (req, res) => {
       include: [{
         model: Usuario,
         as: 'usuario',
-        attributes: ['id', 'nombre', 'email']
+        attributes: ['id', 'nombre', 'email', 'codcli', 'Codw']
       }]
     });
     
@@ -524,11 +522,70 @@ const eliminarTiquet = async (req, res) => {
   }
 };
 
+// Función para enviar email de notificación cuando se agrega un comentario
+const enviarEmailComentario = async (tiquet, comentario, usuario, usuarioAdmin) => {
+  try {
+    const transporter = configurarTransporteEmail();
+    
+    // Si no hay correo del usuario o no hay transporte, no enviamos correo
+    if (!usuario.email) {
+      console.log('No se puede enviar email: el usuario no tiene correo electrónico registrado');
+      return;
+    }
+    
+    // Generar código de seguridad para auto-login
+    const codigoSeguridad = generarCodigoSeguridad();
+    
+    // Construir URL con parámetros para auto-login
+    let autoLoginParams = new URLSearchParams();
+    autoLoginParams.append('codigoSeguridad', codigoSeguridad);
+    autoLoginParams.append('usuario', usuario.nombre);
+    
+    // Añadir parámetros especiales dependiendo del tipo de cliente
+    if (usuario.codcli) {
+      autoLoginParams.append('codcli', usuario.codcli);
+    }
+    
+    if (usuario.Codw) {
+      autoLoginParams.append('Codw', usuario.Codw);
+      // Si tiene Codw, agregar el parámetro Vista=w para el tema webcar
+      autoLoginParams.append('Vista', 'w');
+    }
+    
+    // URL completa con auto-login
+    const clientURL = process.env.CLIENT_URL || 'http://localhost';
+    const baseUrl = `${clientURL}/?${autoLoginParams.toString()}`;
+    
+    // Enviar email
+    await transporter.sendMail({
+      from: `"Sistema de Tiquets" <${process.env.SMTP_USER}>`,
+      to: usuario.email,
+      subject: `Nuevo comentario en su Tiquet #${tiquet.id}: ${tiquet.titulo}`,
+      html: `
+        <h1>Nuevo comentario en su Tiquet</h1>
+        <p><strong>ID:</strong> ${tiquet.id}</p>
+        <p><strong>Título:</strong> ${tiquet.titulo}</p>
+        <div style="background-color: #f5f5f5; padding: 15px; border-left: 4px solid #4a6bff; margin: 10px 0;">
+          <p><strong>${usuarioAdmin.nombre} (Administrador) escribió:</strong></p>
+          <p>${comentario.texto.replace(/\n/g, '<br>')}</p>
+        </div>
+        <p>Para ver el comentario completo y responder, por favor visite su panel de tiquets haciendo clic en el siguiente enlace:</p>
+        <p><a href="${baseUrl}" style="display: inline-block; background-color: #4a6bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; font-weight: bold;">Ver Tiquets</a></p>
+        <p>Gracias por utilizar nuestro sistema de soporte.</p>
+      `
+    });
+    
+    console.log(`Email de notificación de comentario enviado al usuario para tiquet #${tiquet.id}`);
+  } catch (error) {
+    console.error('Error al enviar email de notificación de comentario:', error);
+  }
+};
+
 // Agregar comentario a un tiquet
 const agregarComentario = async (req, res) => {
   try {
     const { id } = req.params;
-    const { texto } = req.body;
+    const { texto, enviarEmail } = req.body;
     const usuario_id = req.usuario.id;
     const esAdministrador = req.usuario.rol === 'admin';
     
@@ -541,7 +598,13 @@ const agregarComentario = async (req, res) => {
     }
     
     // Verificar que existe el tiquet
-    const tiquet = await Tiquet.findByPk(id);
+    const tiquet = await Tiquet.findByPk(id, {
+      include: [{
+        model: Usuario,
+        as: 'usuario',
+        attributes: ['id', 'nombre', 'email', 'codcli', 'Codw']
+      }]
+    });
     
     if (!tiquet) {
       return res.status(404).json({
@@ -564,6 +627,18 @@ const agregarComentario = async (req, res) => {
       usuario_id,
       texto
     });
+    
+    // Si es un administrador y se solicita enviar email, obtener datos completos del admin
+    if (esAdministrador && (enviarEmail === true || enviarEmail === 'true') && tiquet.usuario) {
+      // Obtener datos del administrador
+      const usuarioAdmin = await Usuario.findByPk(usuario_id);
+      if (usuarioAdmin) {
+        // Enviar email al propietario del ticket
+        enviarEmailComentario(tiquet, comentario, tiquet.usuario, usuarioAdmin).catch(err => {
+          console.error('Error al enviar email de notificación de comentario:', err);
+        });
+      }
+    }
     
     // Procesar archivos adjuntos si existen
     if (req.files && req.files.length > 0) {

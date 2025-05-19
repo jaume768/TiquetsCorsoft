@@ -40,13 +40,14 @@ const ticketService = {
   },
   
   // Añadir comentario a un tiquet con archivos adjuntos opcionales
-  agregarComentario: async (tiquetId, texto, archivos = null) => {
+  agregarComentario: async (tiquetId, texto, archivos = null, enviarEmail = false) => {
     let formData = null;
     
     // Si hay archivos adjuntos, usamos FormData
     if (archivos && archivos.length > 0) {
       formData = new FormData();
       formData.append('texto', texto);
+      formData.append('enviarEmail', enviarEmail.toString());
       
       // Agregar cada archivo al FormData
       Array.from(archivos).forEach(archivo => {
@@ -61,7 +62,10 @@ const ticketService = {
       return response.data;
     } else {
       // Si no hay archivos, usamos el método regular
-      const response = await api.post(`/tickets/${tiquetId}/comentarios`, { texto });
+      const response = await api.post(`/tickets/${tiquetId}/comentarios`, { 
+        texto,
+        enviarEmail 
+      });
       return response.data;
     }
   },

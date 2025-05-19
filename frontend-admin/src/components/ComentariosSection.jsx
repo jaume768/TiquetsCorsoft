@@ -10,6 +10,7 @@ const ComentariosSection = ({ tiquetId, usuario }) => {
   const [error, setError] = useState(null);
   const [archivosSeleccionados, setArchivosSeleccionados] = useState([]);
   const [previewArchivos, setPreviewArchivos] = useState([]);
+  const [enviarEmail, setEnviarEmail] = useState(false);
   const fileInputRef = useRef(null);
 
   // Cargar comentarios
@@ -90,9 +91,10 @@ const ComentariosSection = ({ tiquetId, usuario }) => {
     
     try {
       setCargando(true);
-      await ticketService.agregarComentario(tiquetId, nuevoComentario, archivosSeleccionados);
+      await ticketService.agregarComentario(tiquetId, nuevoComentario, archivosSeleccionados, enviarEmail);
       setNuevoComentario('');
       resetFiles();
+      setEnviarEmail(false); // Resetear el checkbox despues de enviar
       await cargarComentarios(); // Recargar comentarios después de agregar uno nuevo
       setError(null);
     } catch (error) {
@@ -279,6 +281,19 @@ const ComentariosSection = ({ tiquetId, usuario }) => {
             )}
           </div>
           
+          <div className="comentarios-form-options">
+            <div className="comentarios-form-send-email">
+              <input
+                type="checkbox"
+                id="enviar-email"
+                checked={enviarEmail}
+                onChange={(e) => setEnviarEmail(e.target.checked)}
+                disabled={cargando}
+              />
+              <label htmlFor="enviar-email">Enviar notificación por email al cliente</label>
+            </div>
+          </div>
+          
           <button 
             type="submit" 
             className="comentarios-form-submit"
@@ -290,7 +305,11 @@ const ComentariosSection = ({ tiquetId, usuario }) => {
                 Enviando...
               </>
             ) : (
-              <>Enviar comentario {archivosSeleccionados.length > 0 && `(${archivosSeleccionados.length} archivos adjuntos)`}</>
+              <>
+                Enviar comentario 
+                {archivosSeleccionados.length > 0 && `(${archivosSeleccionados.length} archivos adjuntos)`}
+                {enviarEmail && ` + notificación por email`}
+              </>
             )}
           </button>
         </form>
